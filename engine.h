@@ -1,15 +1,11 @@
 #ifndef SEQPP_E_HH
 #define SEQPP_E_HH
 
-#ifdef SWIG
-%module seqpp
-%{
-#endif
-
 #include <jack/jack.h>
 #include <map>
 
 #include "disposable.h"
+
 
 extern "C" { int process(jack_nframes_t nframes, void *arg); }
 
@@ -45,9 +41,6 @@ struct engine {
 	}
 };
 
-#ifdef SWIG
-%}
-#endif
 
 
 #endif
