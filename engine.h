@@ -5,9 +5,12 @@
 #include <map>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+
+extern "C" {
+	#include <lua.h>
+	#include <lualib.h>
+	#include <lauxlib.h>
+}
 
 #include "disposable.h"
 #include "ringbuffer.h"
@@ -15,16 +18,22 @@
 #include "heap.h"
 
 
-extern "C" { int process(jack_nframes_t nframes, void *arg); }
+extern "C" { 
+	int process(jack_nframes_t nframes, void *arg); 
+}
 
 typedef disposable<event> disposable_event;
 typedef boost::shared_ptr<disposable<event> > disposable_event_ptr;
+
 typedef std::multimap<jack_nframes_t, disposable_base_ptr> event_map;
+
 typedef boost::shared_ptr<disposable<event_map> > disposable_event_map_ptr;
 typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
 
 
 struct engine {
+	enum {STOPPED, STARTED} state;
+
 	jack_client_t *client;
 	jack_port_t *port;
 
@@ -63,17 +72,35 @@ struct engine {
 		lua_close(lua_state);
 	}
 
+	void midi_note_on(unsigned int channel, unsigned int note, unsigned int velocity) {
+
+	}
+
+	void midi_note_off(unsigned int channel, unsigned int note) {
+
+	}
+
+	void start() {
+		commands.write(boost::bind(&engine::start_, this));
+	}
+
+	void stop() {
+		commands.write(boost::bind(&engine::stop_, this));
+	}
+
 	engine() :
 		commands(1024),
 		current_frame(0),
-		lua_state(lua_open())
+		lua_state(luaL_newstate())
 	{
 		m = disposable<event_map>::create(event_map());
+#if 0
 		for (unsigned int i = 0; i < 100; ++i) {
 			console_event c;
 			c.msg = "blah";
 			m->t.insert(std::make_pair(44100 * i, disposable<console_event>::create(c)));
 		}
+#endif
 	
 		client = jack_client_open("seq++", JackNullOption, 0);
 		port = jack_port_register(client, "out0", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput | JackPortIsTerminal, 0);
@@ -81,6 +108,16 @@ struct engine {
 
 		jack_activate(client);
 	}
+
+	protected:
+		void start_() {
+			std::cout << "start" << std::endl;
+
+		}
+
+		void stop_() {
+			std::cout << "stop" << std::endl;
+		}
 };
 
 
