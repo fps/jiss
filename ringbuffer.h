@@ -24,7 +24,7 @@ struct ringbuffer {
 
 	jack_ringbuffer_t *jack_ringbuffer;
 
-	ringbuffer(unsigned int size) : size(size) {
+	ringbuffer(unsigned int size = 1024) : size(size) {
 		jack_ringbuffer = jack_ringbuffer_create(sizeof(T) * size);
 
 		for (unsigned int i = 0; i < size; ++i) {

@@ -5,6 +5,9 @@
 #include <map>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 
 #include "disposable.h"
 #include "ringbuffer.h"
@@ -31,6 +34,8 @@ struct engine {
 
 	jack_nframes_t current_frame;
 
+	lua_State *lua_state;
+
 	int process(jack_nframes_t nframes, void *arg) {
 		while(commands.can_read()) commands.read()();
 
@@ -55,11 +60,13 @@ struct engine {
 	~engine() {
 		jack_client_close(client);
 		jack_deactivate(client);
+		lua_close(lua_state);
 	}
 
 	engine() :
 		commands(1024),
-		current_frame(0)
+		current_frame(0),
+		lua_state(lua_open())
 	{
 		m = disposable<event_map>::create(event_map());
 		for (unsigned int i = 0; i < 100; ++i) {

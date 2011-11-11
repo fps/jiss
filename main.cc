@@ -7,7 +7,6 @@
 
 #include "engine.h"
 
-typedef std::multimap<jack_nframes_t, jack_nframes_t> event_map;
 
 
 int main() {
