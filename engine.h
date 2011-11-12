@@ -22,13 +22,16 @@ extern "C" {
 	int process(jack_nframes_t nframes, void *arg); 
 }
 
+typedef double jiss_time;
+
 typedef disposable<event> disposable_event;
 typedef boost::shared_ptr<disposable<event> > disposable_event_ptr;
 
-typedef std::multimap<jack_nframes_t, disposable_base_ptr> event_map;
+typedef std::multimap<jiss_time, disposable_base_ptr> event_map;
 
 typedef boost::shared_ptr<disposable<event_map> > disposable_event_map_ptr;
 typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
+
 
 
 struct engine {
@@ -41,17 +44,17 @@ struct engine {
 
 	command_ringbuffer commands;
 
-	jack_nframes_t current_frame;
+	jiss_time current_time;
 
 	lua_State *lua_state;
 
 	int process(jack_nframes_t nframes, void *arg) {
 		while(commands.can_read()) commands.read()();
 
-		event_map::iterator it = m->t.lower_bound(current_frame);
+		event_map::iterator it = m->t.lower_bound(current_time);
 		// if (it == m->t.end()) std::cout << "end" << std::endl;
 
-		while(it != m->t.end() && it->first < current_frame + nframes) {
+		while(it != m->t.end() && it->first < current_time + (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client)) {
 			//std::cout << it->second->t.msg << std::flush;
 			disposable<console_event>* c = dynamic_cast<disposable<console_event>*>(it->second.get());
 			if (c) {
@@ -61,17 +64,10 @@ struct engine {
 			++it;
 		}
 
-		current_frame += nframes;
+		current_time += (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client);
 		return 0;
 	}
 	
-
-	~engine() {
-		jack_client_close(client);
-		jack_deactivate(client);
-		lua_close(lua_state);
-	}
-
 	void midi_note_on(unsigned int channel, unsigned int note, unsigned int velocity) {
 
 	}
@@ -88,11 +84,16 @@ struct engine {
 		commands.write(boost::bind(&engine::stop_, this));
 	}
 
+	engine();
+
+#if 0
 	engine() :
 		commands(1024),
-		current_frame(0),
+		current_time(0),
 		lua_state(luaL_newstate())
 	{
+		SWIG_Lua_NewPointerObj(lua_state, this, SWIG_TypeQueryModule(SWIG_Lua_GetModule(lua_state), SWIG_Lua_GetModule(lua_state), "engine"), 0); 
+
 		m = disposable<event_map>::create(event_map());
 #if 0
 		for (unsigned int i = 0; i < 100; ++i) {
@@ -108,6 +109,14 @@ struct engine {
 
 		jack_activate(client);
 	}
+#endif
+
+	~engine() {
+		jack_client_close(client);
+		jack_deactivate(client);
+		lua_close(lua_state);
+	}
+
 
 	protected:
 		void start_() {
