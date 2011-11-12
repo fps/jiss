@@ -29,8 +29,6 @@ extern "C" {
 	int process(jack_nframes_t nframes, void *arg); 
 }
 
-
-
 typedef std::multimap<jiss_time, disposable_base_ptr> event_map;
 
 typedef boost::shared_ptr<disposable<event_map> > disposable_event_map_ptr;
