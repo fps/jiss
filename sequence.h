@@ -5,6 +5,7 @@
 #include "event.h"
 #include "lua_event.h"
 #include "disposable.h"
+#include "assign.h"
 
 #include <vector>
 #include <map>
@@ -13,27 +14,40 @@
 
 struct engine;
 
-typedef std::multimap<jiss_time, disposable_base_ptr> event_map;
+typedef std::multimap<jiss_time, event_ptr> events_map;
 
 struct sequence {
 	enum {STOPPED, STARTED} state;
+	
+	engine *e;
 
-	event_map events;
+	events_map events;
 
 	jiss_time current_time;
 	jiss_time current_time_in_buffer;
 	jack_nframes_t current_frame_in_buffer;
 
+	void clear() {
+		events.clear();
+	}
+
 	void insert(jiss_time t, const lua_event e) {
-		events.insert(std::make_pair(t, disposable<lua_event>::create(e))); 
+		events.insert(std::make_pair(t, event_ptr(new lua_event(e)))); 
 	}
 	
+	void start();
+
 	/**
 		Precondition: current_time has to be set to the time corresponding to the 
 		first frame in the buffer to process
 	*/
-	void process(jack_nframes_t nframes, engine *e);
-	
+	void process(jack_nframes_t nframes);
+
+	sequence(engine *e = 0) : 
+		e(e),
+		current_time(0)
+	{ 
+	}
 };
 
 typedef disposable<sequence> gc_sequence;

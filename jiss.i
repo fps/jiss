@@ -7,6 +7,7 @@
 #include "lua_event.h"
 #include "disposable_base.h"
 #include "disposable.h"
+#include <boost/shared_ptr.hpp>
 %}
 
 %include "std_string.i"
@@ -19,6 +20,7 @@
 %include "lua_event.h"
 %include "disposable_base.h"
 %include "disposable.h"
+
 
 namespace std {
 %template (sequence_vector) vector<sequence>;
