@@ -48,21 +48,13 @@ struct engine {
 
 	gc_sequence_ptr_vector_ptr sequences;
 
-	boost::shared_ptr<disposable<event_map> > m;
-
 	command_ringbuffer commands;
 
 	double speed;
 
-	jiss_time current_time;
-	jiss_time current_time_in_buffer;
-	jack_nframes_t current_frame_in_buffer;
-
 	lua_State *lua_state;
 
 	std::string lua_init;
-
-	void exec_lua_event(const std::string &code);
 
 	void clear() {
 		commands.write(boost::bind(&engine::clear, this));
@@ -98,7 +90,7 @@ struct engine {
 		first frame in the buffer to process
 	*/
 	int process(jack_nframes_t nframes, void *arg) {
-		jack_midi_clear_buffer(jack_port_get_buffer(port, 1024));
+
 		while(commands.can_read()) {
 			//std::cout << "." << std::endl;
 			commands.read()();
@@ -111,6 +103,8 @@ struct engine {
 			sequences->t[index]->t.process(nframes);
 		}
 
+		return 0;
+#if 0
 		double buffer_time = (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client);
 
 		current_frame_in_buffer = 0;
@@ -146,24 +140,9 @@ struct engine {
 
 		//current_time += (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client);
 		return 0;
+#endif
 	}
 	
-
-	//! Call from process() only
-	//! Precondition: current_frame_in_buffer has to be set correctly
-	void midi_note_on_(unsigned int channel, unsigned int note, unsigned int velocity) {
-		jack_midi_data_t data[3] = {0, 0, 0};
-		data[0] |= 0x90;
-		data[1] = note;
-		data[2] = velocity;
-		
-		jack_midi_event_write(jack_port_get_buffer(port, 1024), current_frame_in_buffer, data, 3);
-	}
-
-	//! Call from process() only
-	void midi_note_off(unsigned int channel, unsigned int note) {
-
-	}
 
 
 	void start() {
@@ -172,10 +151,6 @@ struct engine {
 
 	void stop() {
 		commands.write(boost::bind(&engine::stop_, this));
-	}
-
-	void relocate(jiss_time t) {
-		current_time = t;
 	}
 
 	engine();

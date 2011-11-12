@@ -11,6 +11,7 @@
 #include <map>
 #include <algorithm>
 #include <jack/jack.h>
+#include <jack/midiport.h>
 
 struct engine;
 
@@ -22,11 +23,31 @@ struct sequence {
 	
 	engine *e;
 
+	jack_port_t *port;
+
 	events_map events;
 
 	jiss_time current_time;
 	jiss_time current_time_in_buffer;
 	jack_nframes_t current_frame_in_buffer;
+
+	//! Call from process() only
+	//! Precondition: current_frame_in_buffer has to be set correctly
+	void midi_note_on_(unsigned int channel, unsigned int note, unsigned int velocity) {
+		jack_midi_data_t data[3] = {0, 0, 0};
+		data[0] |= 0x90;
+		data[1] = note;
+		data[2] = velocity;
+		
+		jack_midi_event_write(jack_port_get_buffer(port, 1024), current_frame_in_buffer, data, 3);
+	}
+
+	//! Call from process() only
+	void midi_note_off(unsigned int channel, unsigned int note) {
+
+	}
+
+
 
 	void clear() {
 		events.clear();
@@ -42,18 +63,17 @@ struct sequence {
 		current_time = t;
 	}
 
+	void exec_lua_event(lua_event *e);
+
 	/**
 		Precondition: current_time has to be set to the time corresponding to the 
 		first frame in the buffer to process
 	*/
 	void process(jack_nframes_t nframes);
 
-	sequence(engine *e = 0) : 
-		state(STOPPED),
-		e(e),
-		current_time(0)
-	{ 
-	}
+	sequence(engine *e = 0, const std::string &name = "");
+
+	~sequence();
 };
 
 typedef disposable<sequence> gc_sequence;
