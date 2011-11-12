@@ -42,10 +42,13 @@ struct engine {
 	jack_client_t *client;
 	jack_port_t *port;
 
-	gc_sequence_ptr_vector sequences;
+	gc_sequence_ptr_vector_ptr sequences;
+
 	boost::shared_ptr<disposable<event_map> > m;
 
 	command_ringbuffer commands;
+
+	double speed;
 
 	jiss_time current_time;
 	jiss_time current_time_in_buffer;

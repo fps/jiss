@@ -1,6 +1,8 @@
 #ifndef JISS_EVENT_HH
 #define JISS_EVENT_HH
 
+#include "disposable.h"
+
 struct event {
 	virtual ~event() { }
 };
