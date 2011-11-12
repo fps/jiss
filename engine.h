@@ -14,6 +14,8 @@ extern "C" {
 	#include <lauxlib.h>
 }
 
+#include <unistd.h>
+
 #include "disposable.h"
 #include "ringbuffer.h"
 #include "console_event.h"
@@ -77,6 +79,10 @@ struct engine {
 	void write_blocking_command(boost::function<void()> f) {
 		++cmds_pending;
 		commands.write(f);
+
+		while(cmds_pending > 0) {
+			usleep(1000);
+		}
 	}
 
 	//! Assign a new sequence to existing sequence at index

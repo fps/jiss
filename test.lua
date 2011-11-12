@@ -23,10 +23,10 @@ seq2:insert(0.3, jiss.lua_event("e:at(1):relocate(0.0)"))
 seq2.state = jiss.sequence_STARTED
 
 e:append(seq)
-while e.cmds_pending > 0 do print (".") end
+-- while e.cmds_pending > 0 do print (".") end
 
 e:append(seq2)
-while e.cmds_pending > 0 do print (".") end
+-- while e.cmds_pending > 0 do print (".") end
 
 -- start the whole shebang
 e:start()
