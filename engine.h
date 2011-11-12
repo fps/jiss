@@ -112,51 +112,17 @@ struct engine {
 			--cmds_pending;
 		}
 
+		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
+				jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, 1024));
+		}
+
 		if (state == STOPPED) return 0;
 
 		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
-			//std::cout << "|" << std::endl;
 			sequences->t[index]->t.process(nframes);
 		}
 
 		return 0;
-#if 0
-		double buffer_time = (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client);
-
-		current_frame_in_buffer = 0;
-		current_time_in_buffer = 0;
-
-		event_map::iterator it = m->t.lower_bound(current_time);
-		// if (it == m->t.end()) std::cout << "end" << std::endl;
-		while(true) {
-			if ((it == m->t.end()) || (current_time_in_buffer + (it->first - current_time)) > buffer_time)  {
-				current_time += buffer_time - current_time_in_buffer;
-				current_time_in_buffer = buffer_time;
-				return 0;
-			}
-
-			current_time_in_buffer += it->first - current_time;
-			current_time = it->first;
-
-			current_frame_in_buffer = current_time_in_buffer * jack_get_sample_rate(client);
-
-			disposable<console_event>* c = dynamic_cast<disposable<console_event>*>(it->second.get());
-			if (c) {
-				std::cout << c->t.msg << std::flush;
-			}
-			
-			disposable<lua_event>* l = dynamic_cast<disposable<lua_event>*>(it->second.get());
-			if (l) {
-				exec_lua_event(l->t.code);
-			}
-			event_map::iterator new_it = m->t.lower_bound(current_time);
-			if (it == new_it) ++it;
-			else it = new_it;
-		}
-
-		//current_time += (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client);
-		return 0;
-#endif
 	}
 	
 
