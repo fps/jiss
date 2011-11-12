@@ -3,6 +3,7 @@
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
+
 #include <map>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -19,16 +20,14 @@ extern "C" {
 #include "lua_event.h"
 #include "heap.h"
 #include "sequence.h"
-
+#include "assign.h"
+#include "types.h"
 
 extern "C" { 
 	int process(jack_nframes_t nframes, void *arg); 
 }
 
-typedef double jiss_time;
 
-typedef disposable<event> disposable_event;
-typedef boost::shared_ptr<disposable<event> > disposable_event_ptr;
 
 typedef std::multimap<jiss_time, disposable_base_ptr> event_map;
 
@@ -43,6 +42,7 @@ struct engine {
 	jack_client_t *client;
 	jack_port_t *port;
 
+	gc_sequence_ptr_vector sequences;
 	boost::shared_ptr<disposable<event_map> > m;
 
 	command_ringbuffer commands;
@@ -157,6 +157,10 @@ struct engine {
 	void stop_() {
 		//std::cout << "stop" << std::endl;
 		state = STOPPED;
+	}
+
+	void set_sequences(std::vector<sequence>& seqs) {
+		//commands.write(assign(
 	}
 };
 
