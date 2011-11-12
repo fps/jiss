@@ -7,9 +7,11 @@ e = jiss.engine()
 seq = jiss.sequence(e)
 
 -- seq:clear()
-seq:insert(0.0, jiss.lua_event("e.midi_note_on(0, 64, 127)"))
-seq:insert(1.0, jiss.lua_event("print(\"hi\"); e.relocate(e, 0.0)"))
-seq:start()
+seq:insert(0.0, jiss.lua_event("e:midi_note_on_(0, 64, 127)"))
+seq:insert(1.0, jiss.lua_event("print(\"hi\"); e:at(0):relocate(0.0)"))
+
+-- in non-RT context it's safe to set the state like this
+seq.state = jiss.sequence_STARTED
 e:append(seq)
 
 -- start the whole shebang

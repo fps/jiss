@@ -73,6 +73,10 @@ struct engine {
 		sequences->t.clear();
 	}
 
+	sequence& at(unsigned int index) {
+		return (sequences->t[index]->t);
+	}
+
 	//! Assign a new sequence to existing sequence at index
 	void assign(unsigned int index, sequence &s) {
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
@@ -83,7 +87,9 @@ struct engine {
 	void append(sequence &s) {
 		//gc_sequence_ptr_vector_ptr new_seqs = gc_
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
-		p->t.push_back(gc_sequence::create(s));
+		gc_sequence_ptr s2 = gc_sequence::create(s);
+		// std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
+		p->t.push_back(s2);
 		commands.write(::assign(sequences, p));
 	}
 
