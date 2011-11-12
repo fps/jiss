@@ -32,12 +32,12 @@ engine::engine() :
 
 	m = disposable<event_map>::create(event_map());
 	lua_event l;
-	l.code = "print (\"hello\")";
-	m->t.insert(std::make_pair(0.1, disposable<lua_event>::create(l)));
+	l.code = "e.midi_note_on(e, 0, 64, 127)";
+	m->t.insert(std::make_pair(1.0, disposable<lua_event>::create(l)));
 
 	lua_event l2;
-	l2.code = "e.relocate(e,0.0)";
-	m->t.insert(std::make_pair(0.1, disposable<lua_event>::create(l2)));
+	l2.code = "print(\";\"); e.relocate(e, 0.0)";
+	m->t.insert(std::make_pair(2.0, disposable<lua_event>::create(l2)));
 
 	client = jack_client_open("seq++", JackNullOption, 0);
 	port = jack_port_register(client, "out0", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput | JackPortIsTerminal, 0);
