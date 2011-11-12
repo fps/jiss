@@ -56,7 +56,7 @@ struct engine {
 
 	lua_State *lua_state;
 
-	std::string lua_init;
+	void run_lua_script(const std::string &code);
 
 	void clear() {
 		write_blocking_command(boost::bind(&engine::clear, this));
@@ -94,7 +94,7 @@ struct engine {
 		//gc_sequence_ptr_vector_ptr new_seqs = gc_
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
 		gc_sequence_ptr s2 = gc_sequence::create(s);
-		std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
+		// std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
 		p->t.push_back(s2);
 		write_blocking_command(::assign(sequences, p));
 	}
