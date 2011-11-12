@@ -7,21 +7,28 @@ extern "C" {
         }
 }
 
+void engine::exec_lua_event(const std::string &code) {
+	luaL_dostring(lua_state, code.c_str());
+}
+
 engine::engine() :
+	state(STOPPED),
 	commands(1024),
-	current_time(0),
-	lua_state(luaL_newstate())
+	current_time(0)
 {
-	SWIG_Lua_NewPointerObj(lua_state, this, SWIG_TypeQueryModule(SWIG_Lua_GetModule(lua_state), SWIG_Lua_GetModule(lua_state), "engine"), 0);
+	lua_state = luaL_newstate();
+	luaL_openlibs(lua_state);
+	luaL_dostring(lua_state, "require \"jiss\"");
+
+	//! Every lua script will have a variable called e in it :D
+	SWIG_NewPointerObj(lua_state, this, SWIG_TypeQuery(lua_state, "engine*"), 0);
+	lua_setglobal(lua_state, "e");
+	//luaL_dostring(lua_state, "e.start(e)");
 
 	m = disposable<event_map>::create(event_map());
-#if 0
-for (unsigned int i = 0; i < 100; ++i) {
-console_event c;
-c.msg = "blah";
-m->t.insert(std::make_pair(44100 * i, disposable<console_event>::create(c)));
-}
-#endif
+	lua_event l;
+	l.code = "print (\"hello\")";
+	m->t.insert(std::make_pair(2.0, disposable<lua_event>::create(l)));
 
 	client = jack_client_open("seq++", JackNullOption, 0);
 	port = jack_port_register(client, "out0", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput | JackPortIsTerminal, 0);

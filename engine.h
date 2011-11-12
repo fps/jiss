@@ -15,6 +15,7 @@ extern "C" {
 #include "disposable.h"
 #include "ringbuffer.h"
 #include "console_event.h"
+#include "lua_event.h"
 #include "heap.h"
 
 
@@ -48,6 +49,8 @@ struct engine {
 
 	lua_State *lua_state;
 
+	void exec_lua_event(const std::string &code);
+
 	int process(jack_nframes_t nframes, void *arg) {
 		while(commands.can_read()) commands.read()();
 
@@ -61,7 +64,11 @@ struct engine {
 				std::cout << c->t.msg << std::flush;
 			}
 			
-			++it;
+			disposable<lua_event>* l = dynamic_cast<disposable<lua_event>*>(it->second.get());
+			if (l) {
+				exec_lua_event(l->t.code);
+			}
+				++it;
 		}
 
 		current_time += (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client);
