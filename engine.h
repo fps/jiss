@@ -50,6 +50,8 @@ struct engine {
 
 	command_ringbuffer commands;
 
+	ringbuffer<char> acks;
+
 	double speed;
 
 	lua_State *lua_state;
@@ -57,7 +59,7 @@ struct engine {
 	std::string lua_init;
 
 	void clear() {
-		commands.write(boost::bind(&engine::clear, this));
+		write_blocking_command(boost::bind(&engine::clear, this));
 	}
 
 	//! Clear vector of sequences
@@ -66,13 +68,21 @@ struct engine {
 	}
 
 	sequence& at(unsigned int index) {
+		if (index >= sequences->t.size()) { std::cout << "sequence index out of bounds" << std::endl; }
+
 		return (sequences->t[index]->t);
+	}
+
+	int cmds_pending;
+	void write_blocking_command(boost::function<void()> f) {
+		++cmds_pending;
+		commands.write(f);
 	}
 
 	//! Assign a new sequence to existing sequence at index
 	void assign(unsigned int index, sequence &s) {
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
-		commands.write(::assign(sequences, p));
+		write_blocking_command(::assign(sequences, p));
 	}
 
 	//! Append sequence to the vector of sequences
@@ -80,9 +90,9 @@ struct engine {
 		//gc_sequence_ptr_vector_ptr new_seqs = gc_
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
 		gc_sequence_ptr s2 = gc_sequence::create(s);
-		// std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
+		std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
 		p->t.push_back(s2);
-		commands.write(::assign(sequences, p));
+		write_blocking_command(::assign(sequences, p));
 	}
 
 	/**
@@ -94,6 +104,8 @@ struct engine {
 		while(commands.can_read()) {
 			//std::cout << "." << std::endl;
 			commands.read()();
+			acks.write(0);
+			--cmds_pending;
 		}
 
 		if (state == STOPPED) return 0;
@@ -146,11 +158,11 @@ struct engine {
 
 
 	void start() {
-		commands.write(boost::bind(&engine::start_, this));
+		write_blocking_command(boost::bind(&engine::start_, this));
 	}
 
 	void stop() {
-		commands.write(boost::bind(&engine::stop_, this));
+		write_blocking_command(boost::bind(&engine::stop_, this));
 	}
 
 	engine();

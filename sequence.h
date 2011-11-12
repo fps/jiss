@@ -50,8 +50,6 @@ struct sequence {
 
 	}
 
-
-
 	void clear() {
 		events.clear();
 	}
