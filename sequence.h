@@ -25,6 +25,9 @@ struct sequence {
 
 	jack_port_t *port;
 
+	//! Do not call in RT context
+	void connect(const std::string &destinationport);
+
 	events_map events;
 
 	jiss_time current_time;
