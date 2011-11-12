@@ -46,18 +46,59 @@ struct engine {
 	command_ringbuffer commands;
 
 	jiss_time current_time;
+	jiss_time current_time_in_buffer;
+	jack_nframes_t current_frame_in_buffer;
 
 	lua_State *lua_state;
 
+	std::string lua_init;
+
+	//! This function must only be called when state == STOPPED
+	void exec_lua_init();
+
 	void exec_lua_event(const std::string &code);
 
+	/**
+		Precondition: current_time has to be set to the time corresponding to the 
+		first frame in the buffer to process
+	*/
 	int process(jack_nframes_t nframes, void *arg) {
 		while(commands.can_read()) commands.read()();
 
+		if (state == STOPPED) return 0;
+
+		double buffer_time = (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client);
+
+		current_frame_in_buffer = 0;
+		current_time_in_buffer = 0;
+
 		event_map::iterator it = m->t.lower_bound(current_time);
 		// if (it == m->t.end()) std::cout << "end" << std::endl;
+		while(it != m->t.end() && current_time_in_buffer < buffer_time) {
+			if (current_time_in_buffer + it->first - current_time >= buffer_time) break;
 
-		while(it != m->t.end() && it->first < current_time + (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client)) {
+			current_time_in_buffer += it->first - current_time;
+			current_time = it->first;
+
+			current_frame_in_buffer = current_time_in_buffer * jack_get_sample_rate(client);
+
+			disposable<console_event>* c = dynamic_cast<disposable<console_event>*>(it->second.get());
+			if (c) {
+				std::cout << c->t.msg << std::flush;
+			}
+			
+			disposable<lua_event>* l = dynamic_cast<disposable<lua_event>*>(it->second.get());
+			if (l) {
+				exec_lua_event(l->t.code);
+			}
+			++it;
+		}
+
+#if 0
+		for (jack_nframes_t frame = 0; frame < nframes; ++frame) {
+			
+		}
+		while(it != m->t.end() && it->first < current_time + buffer_time) {
 			//std::cout << it->second->t.msg << std::flush;
 			disposable<console_event>* c = dynamic_cast<disposable<console_event>*>(it->second.get());
 			if (c) {
@@ -70,18 +111,23 @@ struct engine {
 			}
 				++it;
 		}
+#endif
 
 		current_time += (jiss_time)nframes/(jiss_time)jack_get_sample_rate(client);
 		return 0;
 	}
 	
+
+	//! Call from process() only
 	void midi_note_on(unsigned int channel, unsigned int note, unsigned int velocity) {
 
 	}
 
+	//! Call from process() only
 	void midi_note_off(unsigned int channel, unsigned int note) {
 
 	}
+
 
 	void start() {
 		commands.write(boost::bind(&engine::start_, this));
@@ -91,32 +137,11 @@ struct engine {
 		commands.write(boost::bind(&engine::stop_, this));
 	}
 
-	engine();
-
-#if 0
-	engine() :
-		commands(1024),
-		current_time(0),
-		lua_state(luaL_newstate())
-	{
-		SWIG_Lua_NewPointerObj(lua_state, this, SWIG_TypeQueryModule(SWIG_Lua_GetModule(lua_state), SWIG_Lua_GetModule(lua_state), "engine"), 0); 
-
-		m = disposable<event_map>::create(event_map());
-#if 0
-		for (unsigned int i = 0; i < 100; ++i) {
-			console_event c;
-			c.msg = "blah";
-			m->t.insert(std::make_pair(44100 * i, disposable<console_event>::create(c)));
-		}
-#endif
-	
-		client = jack_client_open("seq++", JackNullOption, 0);
-		port = jack_port_register(client, "out0", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput | JackPortIsTerminal, 0);
-		jack_set_process_callback(client, ::process, this);
-
-		jack_activate(client);
+	void relocate(jiss_time t) {
+		current_time = t;
 	}
-#endif
+
+	engine();
 
 	~engine() {
 		jack_client_close(client);
@@ -125,15 +150,18 @@ struct engine {
 	}
 
 
-	protected:
-		void start_() {
-			std::cout << "start" << std::endl;
+	//! Call only from process thread
+	void start_() {
+		//std::cout << "start" << std::endl;
+		state = STARTED;
 
-		}
+	}
 
-		void stop_() {
-			std::cout << "stop" << std::endl;
-		}
+	//! Call only from process thread
+	void stop_() {
+		//std::cout << "stop" << std::endl;
+		state = STOPPED;
+	}
 };
 
 
