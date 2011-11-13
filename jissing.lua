@@ -48,5 +48,7 @@ function cpp_event(code)
 	-- TODO: fix up all the things to make this more convenient
 	os.execute("g++ -g -fPIC -I. -I/usr/include/lua5.1 -o " .. filename .. ".so -shared " .. filename .. ".cc -Wl,-rpath=. jiss.so")
 
-	return jiss.cpp_event("/tmp/foo.so", "run")
+	c =  jiss.cpp_event("/tmp/foo.so", "run")
+	os.execute("rm " .. filename)
+	return c
 end
