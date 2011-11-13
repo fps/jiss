@@ -13,7 +13,7 @@ play(e, "s1", {
 })
 
 play(e, "s2", {
-	{ 0.0,    "for i = 1,3 do \
+	{ 0.0,    "for i = 1,4 do \
 		           s:midi_note_on_(0, 36 + stella[bar][math.random(#stella[bar])], 64 + math.random()*64) \
 	           end"},
 	{ 2*0.45, "s:relocate(0.0)"}
@@ -26,9 +26,10 @@ play(e, "s3", {
 	{0.15 * 24, "s:relocate(0.0)"}
 })
 
--- a sequence that doesn't do much..
+-- every 3 seconds distort some notes in stella[2]
 play(e, "f",  {
-	{1.0, "s:relocate(0.0)"}
+	{0.0, "stella[2][math.random(#stella[2])] = math.random(127)"},
+	{3.0, "s:relocate(0.0)"}
 })
 
 
