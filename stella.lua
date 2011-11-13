@@ -5,7 +5,7 @@ require "jissing"
 e = jiss.engine()
 
 -- setup some state that the sequences later use
-e:run_lua_script("bar = 1; stella = {{38, 41, 45, 48, 50, 53, 57, 60, 65}, {45, 49, 52, 55, 57, 61, 64, 67}}")
+e:run("bar = 1; stella = {{38, 41, 45, 48, 50, 53, 57, 60, 65}, {45, 49, 52, 55, 57, 61, 64, 67}}")
 
 play_events(e, "s1", {
 	{ 0.0,    "s:midi_note_on_(0, stella[bar][math.random(#stella[bar])], 64 + math.random()*64)"},

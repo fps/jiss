@@ -11,7 +11,7 @@ void exec_lua(lua_State *state, const std::string &code) {
 	luaL_dostring(state, code.c_str());
 }
 
-void engine::run_lua_script(const std::string &code) {
+void engine::run(const std::string &code) {
 	write_blocking_command(boost::bind(exec_lua, lua_state, code.c_str()));
 }
 

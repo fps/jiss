@@ -56,7 +56,8 @@ struct engine {
 
 	lua_State *lua_state;
 
-	void run_lua_script(const std::string &code);
+	//! Run a lua script in the engine global context
+	void run(const std::string &code);
 
 	void clear() {
 		write_blocking_command(boost::bind(&engine::clear, this));
