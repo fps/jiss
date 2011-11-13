@@ -10,7 +10,6 @@ end
 function play_events(e, name, events)
 	local s = sequence(e, name, events)
 	s:start()
-	s:connect("midi-monitor:input")
 	e:append(s)
 	return sequence
 end
@@ -24,6 +23,16 @@ end
 function loop_sequence(time, s)
 	s:insert(time, jiss.lua_event("s:relocate(0.0)"))
 	return s
+end
+
+function merge_sequences(s1, s2)
+	
+end
+
+function connect(e, port)
+	for i = 0, (e:num_sequences()-1) do
+		e:at(i):connect(port)
+	end
 end
 
 function midi_sequence(e, name, time, notes)

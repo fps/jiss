@@ -9,14 +9,14 @@ e:run("bar = 1; stella = {{38, 41, 45, 48, 50, 53, 57, 60, 65}, {45, 49, 52, 55,
 
 play_events(e, "s1", {
 	{ 0.0,    "s:midi_note_on_(0, stella[bar][math.random(#stella[bar])], 64 + math.random()*64)"},
-	{ 2*0.15, "s:relocate(0.0)"}
+	{ 0.15, "s:relocate(0.0)"}
 })
 
 play_events(e, "s2", {
 	{ 0.0,    "for i = 1,4 do \
 		           s:midi_note_on_(0, 24 + stella[bar][math.random(#stella[bar])], 64 + math.random()*64) \
 	           end"},
-	{ 2*0.45, "s:relocate(0.0)"}
+	{ 0.45, "s:relocate(0.0)"}
 })
 
 -- a sequence that controls the global variable bar to advance through the song
@@ -32,7 +32,7 @@ play_events(e, "f",  {
 	{3.0, "s:relocate(0.0)"}
 })
 
-
+connect(e, "jass:in")
 -- start the whole shebang
 e:start()
 

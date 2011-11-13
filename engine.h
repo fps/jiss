@@ -44,7 +44,8 @@ struct engine {
 	enum {STOPPED, STARTED} state;
 
 	jack_client_t *client;
-	jack_port_t *port;
+
+	std::string default_destination_port;
 
 	gc_sequence_ptr_vector_ptr sequences;
 
@@ -72,6 +73,10 @@ struct engine {
 
 	void clear() {
 		write_blocking_command(boost::bind(&engine::clear, this));
+	}
+
+	unsigned int num_sequences() {
+		return sequences->t.size();
 	}
 
 	//! Clear vector of sequences
