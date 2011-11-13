@@ -24,8 +24,10 @@ seq2:connect("jass:in")
 seq2:insert(0.0, jiss.lua_event("for i = 1,4 do s:midi_note_on_(0, 36 + stella[bar][math.random(#stella[bar])], 64 + math.random()*64) end"))
 seq2:insert(2*0.45, jiss.lua_event("s:relocate(0.0)"))
 
--- add the sequence to the engine and toggle its state to STARTED
+-- add the sequence to the engine and...
 e:append(seq2)
+
+-- ...toggle its state to STARTED by going explicitly through the engine object
 e:at(1):start()
 
 -- a sequence that controls the global variable bar to advance through the song
