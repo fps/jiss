@@ -4,6 +4,7 @@
 
 sequence::sequence(engine *e, const std::string &name) : 
 	state(STOPPED),
+	name(name),
 	e(e),
 	port(0),
 	current_time(0)

@@ -103,28 +103,7 @@ struct engine {
 		Precondition: current_time has to be set to the time corresponding to the 
 		first frame in the buffer to process
 	*/
-	int process(jack_nframes_t nframes, void *arg) {
-
-		while(commands.can_read()) {
-			//std::cout << "." << std::endl;
-			commands.read()();
-			acks.write(0);
-			--cmds_pending;
-		}
-
-		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
-				jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, 1024));
-		}
-
-		if (state == STOPPED) return 0;
-
-		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
-			sequences->t[index]->t.process(nframes);
-		}
-
-		return 0;
-	}
-	
+	int process(jack_nframes_t nframes, void *arg);
 
 
 	void start() {

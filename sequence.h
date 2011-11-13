@@ -20,6 +20,8 @@ typedef std::multimap<jiss_time, event_ptr> events_map;
 struct sequence {
 	enum {STOPPED, STARTED};
 	int state;
+
+	std::string name;
 	
 	engine *e;
 

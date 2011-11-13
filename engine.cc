@@ -16,6 +16,40 @@ void engine::run_lua_script(const std::string &code) {
 }
 
 
+	/**
+		Precondition: current_time has to be set to the time corresponding to the 
+		first frame in the buffer to process
+	*/
+	int engine::process(jack_nframes_t nframes, void *arg) {
+
+		while(commands.can_read()) {
+			//std::cout << "." << std::endl;
+			commands.read()();
+			acks.write(0);
+			--cmds_pending;
+		}
+
+		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
+				jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, 1024));
+		}
+
+		if (state == STOPPED) return 0;
+
+		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
+			//! Every lua script will have a variable called e in it :D
+			SWIG_NewPointerObj(lua_state, &sequences->t[index]->t, SWIG_TypeQuery(lua_state, "sequence*"), 0);
+			lua_setglobal(lua_state, sequences->t[index]->t.name.c_str());
+
+			SWIG_NewPointerObj(lua_state, &sequences->t[index]->t, SWIG_TypeQuery(lua_state, "sequence*"), 0);
+			lua_setglobal(lua_state, "s");
+
+			sequences->t[index]->t.process(nframes);
+		}
+
+		return 0;
+	}
+	
+
 engine::engine() :
 	state(STOPPED),
 	sequences(gc_sequence_ptr_vector::create(std::vector<gc_sequence_ptr>())),
