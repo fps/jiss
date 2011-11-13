@@ -26,6 +26,11 @@ void sequence::start() {
 	e->write_blocking_command(::assign(state, STARTED));
 }
 
+void sequence::exec_cpp_event(cpp_event *e) {
+	e->f();
+}
+
+
 void sequence::exec_lua_event(lua_event *l) {
 	luaL_dostring(e->lua_state, l->code.c_str());
 }

@@ -4,6 +4,7 @@
 #include "types.h"
 #include "event.h"
 #include "lua_event.h"
+#include "cpp_event.h"
 #include "disposable.h"
 #include "assign.h"
 
@@ -67,6 +68,7 @@ struct sequence {
 	}
 
 	void exec_lua_event(lua_event *e);
+	void exec_cpp_event(cpp_event *e);
 
 	/**
 		Precondition: current_time has to be set to the time corresponding to the 
