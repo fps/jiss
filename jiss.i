@@ -5,6 +5,7 @@
 #include "sequence.h"
 #include "event.h"
 #include "lua_event.h"
+#include "cpp_event.h"
 #include "disposable_base.h"
 #include "disposable.h"
 #include <boost/shared_ptr.hpp>
@@ -18,6 +19,7 @@
 %include "sequence.h"
 %include "event.h"
 %include "lua_event.h"
+%include "cpp_event.h"
 %include "disposable_base.h"
 %include "disposable.h"
 

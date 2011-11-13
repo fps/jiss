@@ -59,6 +59,17 @@ struct engine {
 	//! Run a lua script in the engine global context
 	void run(const std::string &code);
 
+	static engine *e;
+	static engine *get() {
+		return e;
+	}
+
+	//! Will return the currently processing sequence
+	sequence *s;
+	sequence *current_sequence() {
+		return s;
+	}
+
 	void clear() {
 		write_blocking_command(boost::bind(&engine::clear, this));
 	}

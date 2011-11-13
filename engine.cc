@@ -7,6 +7,8 @@ extern "C" {
         }
 }
 
+engine *engine::e = 0;
+
 void exec_lua(lua_State *state, const std::string &code) {
 	luaL_dostring(state, code.c_str());
 }
@@ -21,6 +23,7 @@ void engine::run(const std::string &code) {
 		first frame in the buffer to process
 	*/
 	int engine::process(jack_nframes_t nframes, void *arg) {
+		e = this;
 
 		while(commands.can_read()) {
 			//std::cout << "." << std::endl;
@@ -36,6 +39,7 @@ void engine::run(const std::string &code) {
 		if (state == STOPPED) return 0;
 
 		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
+			s = &sequences->t[index]->t;
 			//! Every lua script will have a variable called s in it pointing to the current sequence :D
 			SWIG_NewPointerObj(lua_state, &sequences->t[index]->t, SWIG_TypeQuery(lua_state, "sequence*"), 0);
 			lua_setglobal(lua_state, "s");

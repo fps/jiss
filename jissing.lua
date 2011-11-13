@@ -33,3 +33,14 @@ function midi_sequence(e, name, time, notes)
 	end
 	return s
 end
+
+function cpp_event(code)
+	code = '#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void run() {\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
+	print(code)
+
+	io.output("/tmp/foo.cc")
+	io.write(code)
+	io.flush()
+
+	os.execute("g++ -fPIC -I. -I/usr/include/lua5.1 -o /tmp/foo.so -shared /tmp/foo.cc")
+end
