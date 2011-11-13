@@ -17,4 +17,5 @@ s:start()
 e:append(s)
 e:start()
 
+-- wait for the user to press enter
 io.stdin:read'*l'

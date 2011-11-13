@@ -28,6 +28,9 @@ struct sequence {
 
 	jack_port_t *port;
 
+	//! The amount of frames to process in proces()
+	jack_nframes_t nframes;
+
 	//! Do not call in RT context
 	void connect(const std::string &destinationport);
 
@@ -45,7 +48,7 @@ struct sequence {
 		data[1] = note;
 		data[2] = velocity;
 		
-		jack_midi_event_write(jack_port_get_buffer(port, 1024), current_frame_in_buffer, data, 3);
+		jack_midi_event_write(jack_port_get_buffer(port, nframes), current_frame_in_buffer, data, 3);
 	}
 
 	//! Call from process() only

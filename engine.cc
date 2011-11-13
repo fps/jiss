@@ -32,6 +32,7 @@ void engine::run(const std::string &code) {
 			--cmds_pending;
 		}
 
+		//! clear the sequences midi buffer even if we are not running
 		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
 				jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, nframes));
 		}
