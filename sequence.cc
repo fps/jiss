@@ -26,11 +26,6 @@ void sequence::start() {
 	e->write_blocking_command(::assign(state, STARTED));
 }
 
-void sequence::exec_cpp_event(cpp_event *e) {
-	e->f();
-}
-
-
 void sequence::exec_lua_event(lua_event *l) {
 	luaL_dostring(e->lua_state, l->code.c_str());
 }
@@ -68,6 +63,12 @@ void sequence::process(jack_nframes_t nframes) {
 		if (l) {
 			//std::cout << "??" << std::endl;
 			exec_lua_event(l);
+		}
+
+		cpp_event *c = dynamic_cast<cpp_event*>(it->second.get());
+		if (c) {
+			//std::cout << "??" << std::endl;
+			c->o->f();
 		}
 
 		events_map::iterator new_it = events.lower_bound(current_time);

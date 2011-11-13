@@ -38,9 +38,15 @@ function cpp_event(code)
 	code = '#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void run() {\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
 	print(code)
 
-	io.output("/tmp/foo.cc")
+	-- TODO handle cleanup in some non-retarded way?
+	filename = os.tmpname()
+	io.output(filename .. ".cc")
 	io.write(code)
 	io.flush()
 
-	os.execute("g++ -fPIC -I. -I/usr/include/lua5.1 -o /tmp/foo.so -shared /tmp/foo.cc")
+	-- compile the assembled function into object file
+	-- TODO: fix up all the things to make this more convenient
+	os.execute("g++ -g -fPIC -I. -I/usr/include/lua5.1 -o " .. filename .. ".so -shared " .. filename .. ".cc -Wl,-rpath=. jiss.so")
+
+	return jiss.cpp_event("/tmp/foo.so", "run")
 end

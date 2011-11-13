@@ -57,6 +57,10 @@ struct sequence {
 		events.clear();
 	}
 
+	void insert_cpp_event(jiss_time t, const cpp_event e) {
+		events.insert(std::make_pair(t, event_ptr(new cpp_event(e)))); 
+	}
+
 	void insert(jiss_time t, const lua_event e) {
 		events.insert(std::make_pair(t, event_ptr(new lua_event(e)))); 
 	}
@@ -68,7 +72,7 @@ struct sequence {
 	}
 
 	void exec_lua_event(lua_event *e);
-	void exec_cpp_event(cpp_event *e);
+	//void exec_cpp_event(cpp_event *e);
 
 	/**
 		Precondition: current_time has to be set to the time corresponding to the 
