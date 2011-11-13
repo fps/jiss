@@ -32,7 +32,7 @@ void sequence::exec_lua_event(lua_event *l) {
 
 
 void sequence::process(jack_nframes_t nframes) {
-	jack_midi_clear_buffer(jack_port_get_buffer(port, 1024));
+	jack_midi_clear_buffer(jack_port_get_buffer(port, nframes));
 
 	if (state == STOPPED) return;
 
