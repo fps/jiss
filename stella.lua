@@ -14,7 +14,7 @@ play(e, "s1", {
 
 play(e, "s2", {
 	{ 0.0,    "for i = 1,4 do \
-		           s:midi_note_on_(0, 36 + stella[bar][math.random(#stella[bar])], 64 + math.random()*64) \
+		           s:midi_note_on_(0, 24 + stella[bar][math.random(#stella[bar])], 64 + math.random()*64) \
 	           end"},
 	{ 2*0.45, "s:relocate(0.0)"}
 })
