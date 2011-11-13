@@ -10,7 +10,7 @@ end
 function play_events(e, name, events)
 	local s = sequence(e, name, events)
 	s:start()
-	s:connect("jass:in")
+	s:connect("midi-monitor:input")
 	e:append(s)
 	return sequence
 end
@@ -40,7 +40,7 @@ function cpp_event(code)
 	local funcname = "run".. math.random(1000000)
 
 	-- setup the wrapper code
-	local code = '#include <iostream>\n#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void ' .. funcname .. '() {\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
+	local code = '#include <cstdlib>\n#include<cmath>\n#include <iostream>\n#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void ' .. funcname .. '() {\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
 	-- print(code)
 
 	-- TODO handle cleanup in some non-retarded way?

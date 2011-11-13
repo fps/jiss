@@ -33,7 +33,7 @@ void engine::run(const std::string &code) {
 		}
 
 		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
-				jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, 1024));
+				jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, nframes));
 		}
 
 		if (state == STOPPED) return 0;
