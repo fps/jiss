@@ -22,7 +22,7 @@ struct cpp_object  {
 	void *fd;
 
 	cpp_object(const std::string sofile, const std::string func_name) {
-		std::cout << sofile << " : " << func_name << std::endl;
+		// std::cout << sofile << " : " << func_name << std::endl;
 		fd = dlopen(sofile.c_str(), RTLD_NOW);
 		if (fd == 0) std::cout << "dlopen failed: " << dlerror() << std::endl;
 
