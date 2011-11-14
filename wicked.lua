@@ -109,7 +109,7 @@ e:run([[
 
 -- this sequence can control the others since it's processed before
 -- the others in the engine
-tune = play_events(e, "tune", loop_events(8, events_string(1, [[
+tune = seq(e, "tune", loop_events(8, events_string(1, [[
 	drums1:relocate(0.0); drums1:start_(); notes:relocate(0.0); notes:start_()
 
 
@@ -119,16 +119,19 @@ tune = play_events(e, "tune", loop_events(8, events_string(1, [[
 
 ]])))
 
--- a sequence that controls the global variable bar to advance through the song
-play_events(e, "control", loop_events(1, events_string(1, [[
-	bar = bar + 1; bar = (bar % #stella);
-]])))
+tune:start()
+e:append(tune)
 
-play_events(e, "notes", 
+-- a sequence that controls the global variable bar to advance through the song
+play(e, seq(e, "control", loop_events(1, events_string(1, [[
+	bar = bar + 1; bar = (bar % #stella);
+]]))))
+
+play(e, seq(e, "notes", 
 loop_events(0.75, {
 	{ 0.125, [[ for i = 1,4 do note_on(0, 24 + stella[bar][math.random(#stella[bar])], 30 + math.random()*64) end	]]	},
 	{ 0.5,   [[ for i = 1,2 do note_on(0, 24 + stella[bar][math.random(#stella[bar])], 10 + math.random()*34) end ]] }
-}))
+})))
 
 drums = [[
 	note_on(1, 64, 127); note_on(2, 64, 127) 
@@ -142,7 +145,7 @@ drums = [[
 	note_on(2, 64, math.random(127))
 ]]
 
-play_events(e, "drums1", loop_events(1, events_string(0.125/2, drums)))
+play(e, seq(e, "drums1", loop_events(1, events_string(0.125/2, drums))))
 -- play_events(e, "drums2", loop_events(1, events_string(0.125, drums)))
 
 

@@ -1,5 +1,5 @@
 -- create a named sequence from a table of events {{t1, e1}, {t2, e2}, ... }
-function sequence(e, name, events)
+function seq(e, name, events)
 	local s = jiss.sequence(e, name)
 	for i = 1,#events do
 		s:insert(events[i][1], jiss.lua_event(events[i][2]))
@@ -7,17 +7,9 @@ function sequence(e, name, events)
 	return s
 end
 
--- convenience function to create a sequence from a table of events
-function play_events(e, name, events)
-	local s = sequence(e, name, events)
-	s:start()
-	e:append(s)
-	return s
-end
-
 -- convenience function to add a sequence to the engine and toggle its
 -- state to STARTED
-function play_sequence(e, s)
+function play(e, s)
 	s:start()
 	e:append(s)
 	return s

@@ -108,6 +108,7 @@ struct engine {
 	//! Assign a new sequence to existing sequence at index
 	void assign(unsigned int index, sequence &s) {
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
+		p->t[index] = disposable<sequence>::create(s);
 		write_blocking_command(::assign(sequences, p));
 	}
 
