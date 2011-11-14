@@ -1,4 +1,3 @@
-require "jiss"
 require "jissing"
 
 e = jiss.engine()

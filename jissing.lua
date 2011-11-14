@@ -1,3 +1,5 @@
+require "jiss"
+
 -- create a named sequence from a table of events {{t1, e1}, {t2, e2}, ... }
 function seq(e, name, events)
 	local s = jiss.sequence(e, name)
