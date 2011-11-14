@@ -11,9 +11,9 @@ end
 
 -- convenience function to add a sequence to the engine and toggle its
 -- state to STARTED
-function play(e, s)
+function play(s)
 	s:start()
-	e:append(s)
+	s.e:append(s)
 	return s
 end
 

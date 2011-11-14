@@ -122,11 +122,11 @@ tune:start()
 e:append(tune)
 
 -- a sequence that controls the global variable bar to advance through the song
-play(e, seq(e, "control", loop_events(1, events_string(1, [[
+play(seq(e, "control", loop_events(1, events_string(1, [[
 	bar = bar + 1; bar = (bar % #stella);
 ]]))))
 
-play(e, seq(e, "notes", 
+play(seq(e, "notes", 
 loop_events(0.75, {
 	{ 0.125, [[ for i = 1,4 do note_on(0, 24 + stella[bar][math.random(#stella[bar])], 30 + math.random()*64) end	]]	},
 	{ 0.5,   [[ for i = 1,2 do note_on(0, 24 + stella[bar][math.random(#stella[bar])], 10 + math.random()*34) end ]] }
@@ -152,7 +152,7 @@ w	note_on(2, 64, math.random(127))
 	note_on(2, 64, math.random(127)) 
 ]]
 
-play(e, seq(e, "drums1", loop_events(4, events_string(1/8, drums))))
+play(seq(e, "drums1", loop_events(4, events_string(1/8, drums))))
 -- play_events(e, "drums2", loop_events(1, events_string(0.125, drums)))
 
 
