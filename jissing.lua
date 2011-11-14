@@ -35,6 +35,8 @@ function events_string(t, s)
 	return ret
 end
 
+
+
 -- merge two sequence tables
 function merge_sequences(s1, s2)
 	
