@@ -141,7 +141,7 @@ drums = [[
 	note_on(2, 64, 127) 
 	note_on(2, 64, math.random(127))
 	note_on(1, 64, 127); note_on(2, 64, 127) 
-w	note_on(2, 64, math.random(127))
+	note_on(2, 64, math.random(127))
 	note_on(2, 64, math.random(127)) 
 	note_on(2, 32, 127); note_on(2, 64, math.random(127)) 
 	note_on(2, 64, math.random(127)) 
@@ -156,6 +156,15 @@ play(seq(e, "drums1", loop_events(4, events_string(1/8, drums))))
 -- play_events(e, "drums2", loop_events(1, events_string(0.125, drums)))
 
 
+bass = [[
+	note_on(3, 48 + stella[bar][math.random(#stella[bar])] % 12, 127)
+
+
+	note_on(3, 48 + stella[bar][math.random(#stella[bar])] % 12, 127)
+]]
+
+
+play(seq(e, "bass", loop_events(4, events_string(1/8, bass))))
 
 connect(e,"jass:in")
 e:start()
