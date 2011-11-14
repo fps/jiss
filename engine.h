@@ -45,6 +45,11 @@ struct engine {
 
 	jack_client_t *client;
 
+	jack_nframes_t nframes;
+
+	//! set by each sequence while it runs
+	jiss_time seq_time_in_buffer;
+
 	std::string default_destination_port;
 
 	gc_sequence_ptr_vector_ptr sequences;

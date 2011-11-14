@@ -22,8 +22,10 @@ void engine::run(const std::string &code) {
 		Precondition: current_time has to be set to the time corresponding to the 
 		first frame in the buffer to process
 	*/
-	int engine::process(jack_nframes_t nframes, void *arg) {
+	int engine::process(jack_nframes_t frames, void *arg) {
 		e = this;
+
+		nframes = frames;
 
 		while(commands.can_read()) {
 			//std::cout << "." << std::endl;
@@ -34,7 +36,7 @@ void engine::run(const std::string &code) {
 
 		//! clear the sequences midi buffer even if we are not running
 		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
-				jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, nframes));
+				jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, frames));
 		}
 
 		if (state == STOPPED) return 0;
@@ -49,7 +51,9 @@ void engine::run(const std::string &code) {
 			SWIG_NewPointerObj(lua_state, &sequences->t[index]->t, SWIG_TypeQuery(lua_state, "sequence*"), 0);
 			lua_setglobal(lua_state, sequences->t[index]->t.name.c_str());
 
-			sequences->t[index]->t.process(nframes);
+			sequences->t[index]->t.current_time_in_buffer = 0;
+
+			sequences->t[index]->t.process(frames);
 		}
 
 		return 0;
@@ -66,6 +70,7 @@ engine::engine() :
 	lua_state = luaL_newstate();
 	luaL_openlibs(lua_state);
 	luaL_dostring(lua_state, "require \"jiss\"");
+	luaL_dostring(lua_state, "require \"jissing\"");
 
 	//! Every lua script will have a variable called e in it pointing to the engine object :D
 	SWIG_NewPointerObj(lua_state, this, SWIG_TypeQuery(lua_state, "engine*"), 0);

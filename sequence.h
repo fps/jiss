@@ -40,11 +40,23 @@ struct sequence {
 	jiss_time current_time_in_buffer;
 	jack_nframes_t current_frame_in_buffer;
 
+
+	void midi_cc(unsigned int channel, unsigned int cc, unsigned int val) {
+		jack_midi_data_t data[3] = {0, 0, 0};
+		data[0] |= 0xb0;
+		data[0] |= channel;
+		data[1] = cc;
+		data[2] = val;
+		
+		jack_midi_event_write(jack_port_get_buffer(port, nframes), current_frame_in_buffer, data, 3);
+	}
+
 	//! Call from process() only
 	//! Precondition: current_frame_in_buffer has to be set correctly
-	void midi_note_on_(unsigned int channel, unsigned int note, unsigned int velocity) {
+	void midi_note_on(unsigned int channel, unsigned int note, unsigned int velocity) {
 		jack_midi_data_t data[3] = {0, 0, 0};
 		data[0] |= 0x90;
+		data[0] |= channel;
 		data[1] = note;
 		data[2] = velocity;
 		
@@ -69,6 +81,11 @@ struct sequence {
 	}
 
 	void start();
+	void stop();
+
+	void start_();
+
+	void stop_() { state = STOPPED; }
 
 	void relocate(jiss_time t) {
 		current_time = t;

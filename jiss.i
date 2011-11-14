@@ -8,6 +8,7 @@
 #include "cpp_event.h"
 #include "disposable_base.h"
 #include "disposable.h"
+#include "heap.h"
 #include <boost/shared_ptr.hpp>
 %}
 
@@ -22,7 +23,7 @@
 %include "cpp_event.h"
 %include "disposable_base.h"
 %include "disposable.h"
-
+%include "heap.h"
 
 namespace std {
 %template (sequence_vector) vector<sequence>;
