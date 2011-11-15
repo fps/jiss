@@ -73,6 +73,16 @@ struct engine {
 		return (boost::dynamic_pointer_cast<store<T> >(storage->t[index]))->t;
 	}
 
+	template<class T>
+	void storage_assign(unsigned int index, const T &t) {
+		storage->t[index] = store_base_ptr(store<T>(t));
+	}
+
+	template<class T>
+	void storage_append(const T &t) {
+		storage->t.push_back(store_base_ptr(new store<T>(t)));
+	}
+
 	lua_State *lua_state;
 
 	//! Run a lua script in the engine global context

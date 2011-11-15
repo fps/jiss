@@ -8,7 +8,7 @@ e = jiss.engine()
 -- one can allocate stuff there, etc..
 -- note that this may only be done when the engine is stopped
 e:exec_cpp_event(cpp_event([[
-	e.storage->t.push_back(store_base_ptr(new store<int>(64)));
+	e.storage_append<int>(64);
 	std::cout << "doing stuff :D" << std::endl;
 ]]))
 
