@@ -50,8 +50,6 @@ struct engine {
 	//! set by each sequence while it runs
 	jiss_time seq_time_in_buffer;
 
-	std::string default_destination_port;
-
 	gc_sequence_ptr_vector_ptr sequences;
 
 	command_ringbuffer commands;
@@ -65,6 +63,9 @@ struct engine {
 	//! Run a lua script in the engine global context
 	void run(const std::string &code);
 
+	//! Set to this in process(). This is only useful from within compiled cpp functions..
+	//! So if you use those, do not instantiate two engine instances in the same executable
+	//! (e.g. the same lua interpreter session
 	static engine *e;
 	static engine *get() {
 		return e;
@@ -95,6 +96,9 @@ struct engine {
 		return (sequences->t[index]->t);
 	}
 
+
+	//! Write a cmd and wait until completion.. Never call this from within the process thread
+	//! It'll never return..
 	int cmds_pending;
 	void write_blocking_command(boost::function<void()> f) {
 		++cmds_pending;
@@ -107,8 +111,13 @@ struct engine {
 
 	//! Assign a new sequence to existing sequence at index
 	void assign(unsigned int index, sequence &s) {
+		//! copy existing sequences into a new vector
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
+
+		//! Assign the new sequence at the index
 		p->t[index] = disposable<sequence>::create(s);
+
+		//! commit to process thread
 		write_blocking_command(::assign(sequences, p));
 	}
 
