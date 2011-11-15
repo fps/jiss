@@ -1,8 +1,12 @@
 require "jiss"
 require "jissing"
 
+-- like with all self contained jiss scripts we start by creating the engine
 e = jiss.engine()
 
+-- e:exec_cpp_event executes the event in non-RT context, so
+-- one can allocate stuff there, etc..
+-- note that this may only be done when the engine is stopped
 e:exec_cpp_event(cpp_event([[
 	e.storage->t.push_back(store_base_ptr(new store<int>(64)));
 	std::cout << "doing stuff :D" << std::endl;
@@ -20,7 +24,10 @@ s:insert_cpp_event(0.1, cpp_event([[
 s:start()
 e:append(s)
 
+-- connect all sequence outputs to "jass:in"
 connect(e,"jass:in")
+
+-- start the processing
 e:start()
 
 -- wait for the user to press enter
