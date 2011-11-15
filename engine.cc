@@ -92,6 +92,9 @@ engine::engine() :
 	speed(1.0),
 	cmds_pending(0)
 {
+	//! create the storage for cpp code
+	storage = disposable<std::vector<boost::shared_ptr<store_base> > >::create(std::vector<boost::shared_ptr<store_base> >());
+	
 	lua_state = luaL_newstate();
 	luaL_openlibs(lua_state);
 	luaL_dostring(lua_state, "require \"jiss\"");

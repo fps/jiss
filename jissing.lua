@@ -64,7 +64,7 @@ function midi_sequence(e, name, time, notes)
 end
 
 function cpp_event(code)
-	print ("compiling cpp code: " .. code)
+	print ("compiling cpp code: \n" .. code)
 	-- TODO generate UNIQUE name
 	local funcname = "run".. math.random(1000000)
 

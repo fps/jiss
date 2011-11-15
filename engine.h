@@ -7,6 +7,7 @@
 #include <map>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/variant.hpp>
 
 extern "C" {
 	#include <lua.h>
@@ -24,6 +25,8 @@ extern "C" {
 #include "sequence.h"
 #include "assign.h"
 #include "types.h"
+#include "store.h"
+
 
 extern "C" { 
 	int process(jack_nframes_t nframes, void *arg); 
@@ -58,10 +61,28 @@ struct engine {
 
 	double speed;
 
+	//! This variable can be used from within cpp_events
+	//! to setup/access global state.
+	boost::shared_ptr<disposable<std::vector<store_base_ptr> > > storage;
+
+
+	//! access element index of store as T. might raise an exception when the
+	//! cast fails
+	template<class T> 
+	T &storage_at(unsigned int index) {
+		return (boost::dynamic_pointer_cast<store<T> >(storage->t[index]))->t;
+	}
+
 	lua_State *lua_state;
 
 	//! Run a lua script in the engine global context
 	void run(const std::string &code);
+
+	void exec_lua_event(lua_event *l) { run(l->code); }
+
+	void exec_cpp_event(cpp_event *l) {
+		l->o->f();
+	}
 
 	//! Set to this in process(). This is only useful from within compiled cpp functions..
 	//! So if you use those, do not instantiate two engine instances in the same executable
