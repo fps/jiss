@@ -72,10 +72,17 @@ struct engine {
 
 	double speed;
 
+	engine();
+
+	~engine() {
+		jack_client_close(client);
+		jack_deactivate(client);
+		lua_close(lua_state);
+	}
+
 	//! This variable can be used from within cpp_events
 	//! to setup/access global state.
 	boost::shared_ptr<disposable<std::vector<store_base_ptr> > > storage;
-
 
 	//! access element index of store as T. might raise an exception when the
 	//! cast fails
@@ -178,12 +185,7 @@ struct engine {
 		write_blocking_command(::assign(sequences, p));
 	}
 
-	/**
-		Precondition: current_time has to be set to the time corresponding to the 
-		first frame in the buffer to process
-	*/
 	int process(jack_nframes_t nframes, void *arg);
-
 
 	//! never call in process
 	void start() {
@@ -198,15 +200,6 @@ struct engine {
 		lua_gc(lua_state, LUA_GCRESTART, 0);
 		//! run GC after stopping :D
 	}
-
-	engine();
-
-	~engine() {
-		jack_client_close(client);
-		jack_deactivate(client);
-		lua_close(lua_state);
-	}
-
 
 	//! Call only from process thread
 	void start_() {
