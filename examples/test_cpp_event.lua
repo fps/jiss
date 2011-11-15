@@ -12,9 +12,9 @@ e:exec_cpp_event(cpp_event([[
 	std::cout << "doing stuff :D" << std::endl;
 ]]))
 
-s = cpp_seq(e, "rand", lines(1.0, [[
-	s.midi_note_on(1, e.storage_at<int>(0), 127);
-]]))
+s = cpp_seq(e, "rand", lines(1.0, 
+[[ s.midi_note_on(1, e.storage_at<int>(0), 127); ]]
+))
 
 s = loop(1.0, s)
 

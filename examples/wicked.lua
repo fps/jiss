@@ -116,23 +116,27 @@ tune = loop(8, lua_seq(e, "tune", lines(1,
 
 
 
-	drums1:stop_()
-]])))
+	if math.random() > 0.6 then drums1:stop_() end
+]]
+)))
 
 tune:start()
 e:append(tune)
 
 -- a sequence that controls the global variable bar to advance through the song
-play(loop(1, lua_seq(e, "control", lines(1, [[
-	bar = bar + 1; bar = (bar % #stella);
-]]))))
+play(loop(1, lua_seq(e, "control", lines(1, 
+[[
+	bar = bar + 1; bar = (bar % #stella); 
+]]
+))))
 
 play(loop(0.75, lua_seq(e, "notes", {
 	{ 0.125, [[ for i = 1,4 do note_on(0, 24 + stella[bar][math.random(#stella[bar])], 30 + math.random()*64) end	]]	},
 	{ 0.5,   [[ for i = 1,2 do note_on(0, 24 + stella[bar][math.random(#stella[bar])], 10 + math.random()*34) end ]] }
 })))
 
-drums = [[
+drums = 
+[[
 	note_on(1, 64, 127); note_on(2, 64, 127) 
 	note_on(2, 64, 127)
 	note_on(2, 64, math.random(127))
@@ -156,15 +160,32 @@ play(loop(2, lua_seq(e, "drums1", lines(1/8, drums))))
 -- play_events(e, "drums2", loop_events(1, events_string(0.125, drums)))
 
 
-bass = [[
+bass = 
+[[
 	note_on(3, 48 + stella[bar][math.random(#stella[bar])] % 12, 127)
 
+	--
 
+	note_on(3, 48 + stella[bar][math.random(#stella[bar])] % 12, 127) 
 
+	--
 
+	-- --
+	
+	-- 
 
+	-- -- 
 
-	note_on(3, 48 + stella[bar][math.random(#stella[bar])] % 12, 127)
+	if (math.random() > 0.3) then note_on(3, 60 + stella[bar][math.random(#stella[bar])] % 12, 127) end
+
+	-- --
+
+	-- 
+
+	if (math.random() > 0.6) then note_on(3, 60 + stella[bar][math.random(#stella[bar])] % 12, 127) end
+
+	--
+
 ]]
 
 
