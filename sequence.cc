@@ -39,6 +39,10 @@ void sequence::stop() {
 	e->write_blocking_command(::assign(state, STOPPED));
 }
 
+void sequence::exec_cpp_event(cpp_event *c) {
+	c->o->f();
+}
+
 void sequence::exec_lua_event(lua_event *l) {
 	luaL_dostring(e->lua_state, l->code.c_str());
 }
@@ -88,7 +92,7 @@ void sequence::process(jack_nframes_t nframes) {
 
 			cpp_event *c = dynamic_cast<cpp_event*>(it->second.get());
 			if (c) {
-				c->o->f();
+				exec_cpp_event(c);
 			}
 		} while ((++it)->first == t);
 		
