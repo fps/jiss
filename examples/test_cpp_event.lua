@@ -9,18 +9,17 @@ e = jiss.engine()
 -- note that this may only be done when the engine is stopped
 e:exec_cpp_event(cpp_event(
 [[
-	e.storage_append<int>(64);
-	std::cout << "doing stuff :D" << std::endl;
+	e.storage_append<int>(0);
 ]]
 ))
 
 s = cpp_seq(e, "rand", lines(1.0, 
 [[
-	s.midi_note_on(1, e.storage_at<int>(0), 127); 
+	int &i = e.storage_at<int>(0); i = (i + 1) % 128; s.midi_note_on(1, i, 127); 
 ]]
 ))
 
-s = loop(1.0, s)
+s = loop(0.125/4, s)
 
 s:start()
 e:append(s)
