@@ -92,7 +92,7 @@ struct sequence {
 	void stop_() { state = STOPPED; }
 
 	void relocate(jiss_time t) {
-		std::cout << "relocate" << std::endl;
+		//std::cout << "relocate" << std::endl;
 		current_time = t;
 		do_process = true;
 	}

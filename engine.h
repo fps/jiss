@@ -105,10 +105,15 @@ struct engine {
 		}
 	}
 
+	void register_sequence(const sequence &s);
+
 	//! Assign a new sequence to existing sequence at index
 	void assign(unsigned int index, sequence &s) {
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
 		p->t[index] = disposable<sequence>::create(s);
+
+		register_sequence(p->t[index]->t);
+
 		write_blocking_command(::assign(sequences, p));
 	}
 
@@ -119,6 +124,7 @@ struct engine {
 		gc_sequence_ptr s2 = gc_sequence::create(s);
 		// std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
 		p->t.push_back(s2);
+		register_sequence(s2->t);
 		write_blocking_command(::assign(sequences, p));
 	}
 

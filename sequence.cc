@@ -60,8 +60,10 @@ void sequence::process(jack_nframes_t nframes) {
 	// if (it == m->t.end()) std::cout << "end" << std::endl;
 	while(true) {
 		if ((it == events.end()) || (current_time_in_buffer + (it->first - current_time)) > buffer_time)  {
-			current_time += buffer_time - current_time_in_buffer;
-			e->seq_time_in_buffer = current_time_in_buffer = buffer_time;
+			if (!do_process) {
+				current_time += buffer_time - current_time_in_buffer;
+				e->seq_time_in_buffer = current_time_in_buffer = buffer_time;
+			}
 			return;
 		}
 
@@ -71,22 +73,24 @@ void sequence::process(jack_nframes_t nframes) {
 		//current_frame_in_buffer = current_time_in_buffer * jack_get_sample_rate(e->client);
 
 
+		//! current time might be overwritten by relocate
+		double t = current_time;
+
+		//! bind the lua global variable s to this sequence
 		luaL_dostring(e->lua_state, s_bind.c_str());
 
 		do {
-			// std::cout << "efhe" << std::endl;
+			// std::cout << it->first << std::endl;
 			lua_event *l = dynamic_cast<lua_event*>(it->second.get());
 			if (l) {
-				//std::cout << "??" << std::endl;
 				exec_lua_event(l);
 			}
 
 			cpp_event *c = dynamic_cast<cpp_event*>(it->second.get());
 			if (c) {
-				//std::cout << "??" << std::endl;
 				c->o->f();
 			}
-		} while ((++it)->first == current_time);
+		} while ((++it)->first == t);
 		
 		// events_map::iterator new_it = events.lower_bound(current_time);
 		// if (it == new_it) ++it;

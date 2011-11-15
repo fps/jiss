@@ -1,0 +1,16 @@
+
+Given two sequences:
+
+x . . . :0 . . .
+
+where x, y, z represent some events and :0 is the relocation event to time 0 the expected order of event execution would be
+
+x . . . x . . . x . . . 
+
+ad infinitum. i.e. once the sequencer reaches time t = 4 where the relocation happens it jumps to t = 0 and executes the event present there.. problem: this would send the engine into an infinite loop with the simple sequence consisting of one relocation event at time t = 0
+
+:0 . . . . . . 
+
+this makes sense though :D so relocation events are events that trigger additional processing by the engine..
+
+
