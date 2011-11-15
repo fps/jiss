@@ -17,6 +17,8 @@ extern "C" {
 
 #include <unistd.h>
 
+#include <sys/time.h>
+
 #include "disposable.h"
 #include "ringbuffer.h"
 #include "console_event.h"
@@ -38,6 +40,15 @@ typedef boost::shared_ptr<disposable<event_map> > disposable_event_map_ptr;
 typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
 
 
+/**
+	return the current system time as jiss_time. The zero reference is 
+	not defined, but is guaranteed to stay the same throughout all calls to wall_time
+**/
+inline jiss_time wall_time() {
+	timeval t;
+	gettimeofday(&t, 0);
+	return t.tv_sec + 1000000.0 * t.tv_usec;
+}
 
 /**
 	All functions that are executed in the RT context have an underscore postfix. Example: clear_().

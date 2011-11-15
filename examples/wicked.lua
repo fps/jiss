@@ -108,26 +108,26 @@ e:run([[
 
 -- this sequence can control the others since it's processed before
 -- the others in the engine
-tune = seq(e, "tune", loop_events(8, events_string(1, [[
+tune = loop(8, lua_seq(e, "tune", lines(1, 
+[[
 	drums1:relocate(0.0); drums1:start_(); notes:relocate(0.0); notes:start_()
 
 
 
 
-	drums1:stop_();
 
+	drums1:stop_()
 ]])))
 
 tune:start()
 e:append(tune)
 
 -- a sequence that controls the global variable bar to advance through the song
-play(seq(e, "control", loop_events(1, events_string(1, [[
+play(loop(1, lua_seq(e, "control", lines(1, [[
 	bar = bar + 1; bar = (bar % #stella);
 ]]))))
 
-play(seq(e, "notes", 
-loop_events(0.75, {
+play(loop(0.75, lua_seq(e, "notes", {
 	{ 0.125, [[ for i = 1,4 do note_on(0, 24 + stella[bar][math.random(#stella[bar])], 30 + math.random()*64) end	]]	},
 	{ 0.5,   [[ for i = 1,2 do note_on(0, 24 + stella[bar][math.random(#stella[bar])], 10 + math.random()*34) end ]] }
 })))
@@ -152,7 +152,7 @@ drums = [[
 	note_on(2, 64, math.random(127)) 
 ]]
 
-play(seq(e, "drums1", loop_events(4, events_string(1/8, drums))))
+play(loop(2, lua_seq(e, "drums1", lines(1/8, drums))))
 -- play_events(e, "drums2", loop_events(1, events_string(0.125, drums)))
 
 
@@ -160,11 +160,15 @@ bass = [[
 	note_on(3, 48 + stella[bar][math.random(#stella[bar])] % 12, 127)
 
 
+
+
+
+
 	note_on(3, 48 + stella[bar][math.random(#stella[bar])] % 12, 127)
 ]]
 
 
-play(seq(e, "bass", loop_events(4, events_string(1/8, bass))))
+play(loop(4, lua_seq(e, "bass", lines(1/8, bass))))
 
 connect(e,"jass:in")
 e:start()

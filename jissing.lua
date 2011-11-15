@@ -1,13 +1,25 @@
 require "jiss"
 
--- create a named sequence from a table of events {{t1, e1}, {t2, e2}, ... }
-function seq(e, name, events)
+-- create a named sequence from a table of string events {{t1, e1}, {t2, e2}, ... }
+-- which represent lua code
+function lua_seq(e, name, events)
 	local s = jiss.sequence(e, name)
 	for i = 1,#events do
 		s:insert(events[i][1], jiss.lua_event(events[i][2]))
 		end
 	return s
 end
+
+-- create a named sequence from a table of string events {{t1, e1}, {t2, e2}, ... }
+-- which represent cpp code 
+function cpp_seq(e, name, events)
+	local s = jiss.sequence(e, name)
+	for i = 1,#events do
+		s:insert_cpp_event(events[i][1], cpp_event(events[i][2]))
+		end
+	return s
+end
+
 
 -- convenience function to add a sequence to the engine and toggle its
 -- state to STARTED
@@ -18,19 +30,20 @@ function play(s)
 end
 
 -- add a lua event to sequence table s to relocate to 0 at a certain time t
-function loop_events(time, s)
+function loop(time, s)
 	local seq = s
-	table.insert(seq, {time, [[s:relocate(0.0)]]})
+	seq:insert(time, jiss.lua_event([[s:relocate(0.0)]]))
 	return seq
 end
 
--- expects a string s containing n lines which contain
--- lua chunks. returns an event table with each
+-- expects a string s containing n lines where each line represents
+-- code for an event. returns an event table with each
 -- event being time t apart
-function events_string(t, s)
+function lines(t, s)
 	local time = 0
 	local ret = {}
-	for line in s:gmatch("[^\n]*") do
+	for line in s:gmatch("[^\n]*\n") do
+		-- print("line: " .. line)
 		table.insert(ret, {time, line})
 		time = time + t
 	end
