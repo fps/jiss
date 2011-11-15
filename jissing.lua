@@ -1,5 +1,7 @@
 require "jiss"
 
+-- require "LibCompress/LibCompress"
+
 -- create a named sequence from a table of string events {{t1, e1}, {t2, e2}, ... }
 -- which represent lua code
 function lua_seq(e, name, events)

@@ -9,20 +9,17 @@ e = jiss.engine()
 -- note that this may only be done when the engine is stopped
 e:exec_cpp_event(cpp_event(
 [[
-	e.storage_append<int>(0);
+	e.storage_append<int>(0); // create an int entry in the c+ storage
 ]]
 ))
 
-s = cpp_seq(e, "rand", lines(1.0, 
+-- This sequence consists of a single event that just increases the int at 
+-- storage index 0 and then plays a midi note..
+play(loop(0.125/4, cpp_seq(e, "rand", lines(1.0, 
 [[
 	int &i = e.storage_at<int>(0); i = (i + 1) % 128; s.midi_note_on(1, i, 127); 
 ]]
-))
-
-s = loop(0.125/4, s)
-
-s:start()
-e:append(s)
+))))
 
 -- connect all sequence outputs to "jass:in"
 connect(e,"jass:in")
