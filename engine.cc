@@ -14,7 +14,8 @@ void exec_lua(lua_State *state, const std::string &code) {
 }
 
 void engine::run(const std::string &code) {
-	write_blocking_command(boost::bind(exec_lua, lua_state, code.c_str()));
+	//write_blocking_command(boost::bind(exec_lua, lua_state, code.c_str()));
+	exec_lua(lua_state, code.c_str());
 }
 
 
@@ -36,25 +37,49 @@ void engine::run(const std::string &code) {
 
 		//! clear the sequences midi buffer even if we are not running
 		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
-				jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, frames));
-		}
-
-		if (state == STOPPED) return 0;
-
-		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
-			s = &sequences->t[index]->t;
-			//! Every lua script will have a variable called s in it pointing to the current sequence :D
-			SWIG_NewPointerObj(lua_state, &sequences->t[index]->t, SWIG_TypeQuery(lua_state, "sequence*"), 0);
-			lua_setglobal(lua_state, "s");
+			jack_midi_clear_buffer(jack_port_get_buffer(sequences->t[index]->t.port, frames));
 
 			//! And also named like the sequence
 			SWIG_NewPointerObj(lua_state, &sequences->t[index]->t, SWIG_TypeQuery(lua_state, "sequence*"), 0);
 			lua_setglobal(lua_state, sequences->t[index]->t.name.c_str());
-
-			sequences->t[index]->t.current_time_in_buffer = 0;
-
-			sequences->t[index]->t.process(frames);
 		}
+
+		if (state == STOPPED) return 0;
+
+		for (unsigned int frame = 0; frame < nframes; ++frame) {
+
+			for (unsigned int index = 0; index < sequences->t.size(); ++index) {
+				//! initially process all sequences
+				sequences->t[index]->t.do_process = true;
+				sequences->t[index]->t.current_frame_in_buffer = frame;
+			}
+
+			unsigned int relocations = 0;			
+			do {
+				relocations = 0;			
+				for (unsigned int index = 0; index < sequences->t.size(); ++index) {
+					//! Every lua script will have a variable called s in it pointing to the current sequence :D
+					//SWIG_NewPointerObj(lua_state, &sequences->t[index]->t, SWIG_TypeQuery(lua_state, "sequence*"), 0);
+					//lua_setglobal(lua_state, "s");
+
+					s = &sequences->t[index]->t;
+
+					if (sequences->t[index]->t.do_process) {
+						sequences->t[index]->t.current_time_in_buffer = 0;
+
+						//! process() sets do_process to false 
+						sequences->t[index]->t.process(1);
+					}
+
+					//! but if the sequence was relocated it needs more processing
+					//! see meditation.txt
+					if (sequences->t[index]->t.do_process)
+						++relocations;
+
+					if (relocations != 0) std::cout << "." << std::endl;
+				} 
+			} while(relocations != 0);
+		} 
 
 		return 0;
 	}

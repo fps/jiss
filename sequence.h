@@ -40,6 +40,10 @@ struct sequence {
 	jiss_time current_time_in_buffer;
 	jack_nframes_t current_frame_in_buffer;
 
+	std::string s_bind;
+
+	bool do_process;
+
 
 	void midi_cc(unsigned int channel, unsigned int cc, unsigned int val) {
 		jack_midi_data_t data[3] = {0, 0, 0};
@@ -88,7 +92,9 @@ struct sequence {
 	void stop_() { state = STOPPED; }
 
 	void relocate(jiss_time t) {
+		std::cout << "relocate" << std::endl;
 		current_time = t;
+		do_process = true;
 	}
 
 	void exec_lua_event(lua_event *e);
