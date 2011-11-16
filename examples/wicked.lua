@@ -124,7 +124,7 @@ play(loop(32, lua_seq(e, "onoff",  lines(1,
 -- every 8th second randomly turn drums off for a bar
 play(loop(8, lua_seq(e, "tune", lines(1, 
 [[
-	-- drums1:start_(); notes:start_()
+	drums1:start_();
 
 
 
