@@ -111,15 +111,20 @@ e:run([[
 -- to a common sync point after a while..
 play(loop(32, lua_seq(e, "reloc", lines(1, 
 [[
-	seqs = {tune, control, notes, bass1, bass2}; for i = 1,#seqs do seqs[i]:relocate(0) end
+	seqs = {tune, control, drums1, notes, bass1, bass2}; for i = 1,#seqs do seqs[i]:relocate(0) end
 ]]
 ))))
 
--- this sequence can control the others since it's processed before
--- the others in the engine
+play(loop(32, lua_seq(e, "onoff",  lines(1, 
+[[
+	seqs = {tune, drums1, bass1, bass2}; for i = 1,#seqs do if math.random() > 0.4 then seqs[i]:start_() else seqs[i]:stop_() end end
+]]
+))))
+
+-- every 8th second randomly turn drums off for a bar
 play(loop(8, lua_seq(e, "tune", lines(1, 
 [[
-	drums1:start_(); notes:start_()
+	-- drums1:start_(); notes:start_()
 
 
 
