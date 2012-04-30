@@ -1,34 +1,30 @@
-require "jiss"
-
--- create the engine
+require "jissing"
 e = jiss.engine()
 
-e:run("notes = {38, 41, 45, 49, 50, 53, 57, 61}")
+e:run("notes = range(20, 80, maj7s11(C(4)))")
 
--- note that a sequence has to know about the engine it plays on..
+tick = e:get_samplerate()/8
+
 seq = jiss.sequence(e, "s1")
+seq:connect("ardour:MIDI 1/midi_in 1")
 
-seq:connect("jass:in")
-seq:insert(0, jiss.lua_event("s:midi_note_on_(0, notes[math.random(#notes)], 127)"))
-seq:insert(e:get_samplerate(), jiss.lua_event("s:relocate(0.0)"))
+seq:insert(0, jiss.lua_event("if math.random() > 0.7 then note_on(0, notes[math.random(#notes)], 127) end;"))
+seq:insert(tick, jiss.lua_event("s:relocate(0)"))
 
--- add the sequence to the engine and toggle its state to STARTED
 e:append(seq)
 e:at(0):start()
 
 
--- seq2 = jiss.sequence(e, "s2")
+seq2 = jiss.sequence(e, "s2")
 
--- seq2:connect("jass:in")
--- seq2:insert(0, jiss.lua_event("e:at(1):midi_note_on_(0, 24 + notes[math.random(#notes)], 127)"))
--- seq2:insert(e:get_samplerate(), jiss.lua_event("e:at(1):relocate(0.0)"))
+seq2:connect("ardour:MIDI 2/midi_in 1")
 
--- add the sequence to the engine and toggle its state to STARTED
--- e:append(seq2)
--- e:at(1):start()
+seq2:insert(0, jiss.lua_event("if math.random() > 0.7 then note_on(0, notes[math.random(#notes)], 127) end;"))
+seq2:insert(tick, jiss.lua_event("s:relocate(0)"))
 
+e:append(seq2)
+e:at(1):start()
 
--- start the whole shebang
 e:start()
 
 -- wait until the user presses a key
