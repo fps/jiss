@@ -182,13 +182,13 @@ bass =
 
 	--
 
-	-- --
+	if (math.random() > 0.9) then note_on(3, 60 + stella[bar][math.random(#stella[bar])] % 12, 127) end
 	
 	-- 
 
 	-- -- 
 
-	if (math.random() > 0.3) then note_on(3, 60 + stella[bar][math.random(#stella[bar])] % 12, 127) end
+	if (math.random() > 0.7) then note_on(3, 60 + stella[bar][math.random(#stella[bar])] % 12, 127) end
 
 	-- --
 

@@ -41,16 +41,6 @@ typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
 
 
 /**
-	return the current system time as jiss_time. The zero reference is 
-	not defined, but is guaranteed to stay the same throughout all calls to wall_time
-**/
-inline jiss_time wall_time() {
-	timeval t;
-	gettimeofday(&t, 0);
-	return t.tv_sec + 1000000.0 * t.tv_usec;
-}
-
-/**
 	All functions that are executed in the RT context have an underscore postfix. Example: clear_().
 	You can call clear() from the non-RT context and it will post the command to the engine..
 */
@@ -69,8 +59,6 @@ struct engine {
 	command_ringbuffer commands;
 
 	ringbuffer<char> acks;
-
-	double speed;
 
 	engine();
 
@@ -217,9 +205,11 @@ struct engine {
 	void set_sequences(std::vector<sequence>& seqs) {
 		//commands.write(assign(
 	}
+
+	jack_nframes_t get_samplerate() {
+		return jack_get_sample_rate(client);
+	}
 };
-
-
 
 #endif
 

@@ -56,7 +56,7 @@ void sequence::process(jack_nframes_t nframes) {
 
 	// std::cout << "seq:proc" << std::endl;
 
-	double buffer_time = (jiss_time)nframes/(jiss_time)jack_get_sample_rate(e->client);
+	jiss_time buffer_time = (jiss_time)nframes;
 
 	//current_frame_in_buffer = 0;
 
@@ -78,7 +78,7 @@ void sequence::process(jack_nframes_t nframes) {
 
 
 		//! current time might be overwritten by relocate
-		double t = current_time;
+		jiss_time t = current_time;
 
 		//! bind the lua global variable s to this sequence
 		luaL_dostring(e->lua_state, s_bind.c_str());

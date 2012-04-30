@@ -89,7 +89,6 @@ engine::engine() :
 	state(STOPPED),
 	sequences(gc_sequence_ptr_vector::create(std::vector<gc_sequence_ptr>())),
 	commands(1024),
-	speed(1.0),
 	cmds_pending(0)
 {
 	//! create the storage for cpp code

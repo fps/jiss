@@ -3,7 +3,7 @@
 
 #include <jack/jack.h>
 
-typedef double jiss_time;
+typedef jack_nframes_t jiss_time;
 
 #endif
 

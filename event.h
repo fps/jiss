@@ -11,7 +11,5 @@ typedef boost::shared_ptr<event> event_ptr;
 typedef disposable<event> disposable_event;
 typedef boost::shared_ptr<disposable<event> > disposable_event_ptr;
 
-
-
 #endif
 

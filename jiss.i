@@ -12,6 +12,9 @@
 #include <boost/shared_ptr.hpp>
 %}
 
+%apply unsigned long long { jiss_time }
+%apply unsigned long long { jack_nframes_t }
+
 %include "std_string.i"
 %include "std_vector.i"
 
@@ -31,4 +34,5 @@ namespace std {
 }
 
 %template (gc_sequence) disposable<sequence>;
+
 
