@@ -9,8 +9,8 @@ e:run("notes = {38, 41, 45, 49, 50, 53, 57, 61}")
 seq = jiss.sequence(e, "s1")
 
 seq:connect("jass:in")
-seq:insert(0, jiss.lua_event("print('0'); e:at(0):midi_note_on_(0, notes[math.random(#notes)], 127)"))
-seq:insert(e:get_samplerate(), jiss.lua_event("e:at(0):relocate(0.0)"))
+seq:insert(0, jiss.lua_event("s:midi_note_on_(0, notes[math.random(#notes)], 127)"))
+seq:insert(e:get_samplerate(), jiss.lua_event("s:relocate(0.0)"))
 
 -- add the sequence to the engine and toggle its state to STARTED
 e:append(seq)
