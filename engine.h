@@ -34,9 +34,6 @@ extern "C" {
 	int process(jack_nframes_t nframes, void *arg); 
 }
 
-typedef std::multimap<jiss_time, disposable_base_ptr> event_map;
-
-typedef boost::shared_ptr<disposable<event_map> > disposable_event_map_ptr;
 typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
 
 
@@ -199,17 +196,12 @@ struct engine {
 	void start_() {
 		//std::cout << "start" << std::endl;
 		state = STARTED;
-
 	}
 
 	//! Call only from process thread
 	void stop_() {
 		//std::cout << "stop" << std::endl;
 		state = STOPPED;
-	}
-
-	void set_sequences(std::vector<sequence>& seqs) {
-		//commands.write(assign(
 	}
 
 	jack_nframes_t get_samplerate() {

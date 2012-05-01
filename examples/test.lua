@@ -13,8 +13,6 @@ seq:insert(tick, jiss.lua_event("s:relocate(0)"))
 
 e:append(seq)
 e:at(0):start()
-
-
 seq2 = jiss.sequence(e, "s2")
 seq2:connect("ardour:MIDI 2/midi_in 1")
 
@@ -25,21 +23,23 @@ seq2:insert(tick, jiss.lua_event("s:relocate(0)"))
 e:append(seq2)
 e:at(1):start()
 
-
-play(loop(8 * tick, lua_seq(e, "s3", lines(tick, 
+play(lua_seq(e, "seq3", lines(tick, 
 													  [[
 															  note_on(0, C(2), 127)
 
 
+															  s:relocate(0)
+													  ]])))
 
-															  note_on(0, G(2)-1, 127)
-															  note_on(0, D(3), 127)
 
-															  note_on(0, B(3), 127)
-													  ]]))))
-
+-- seq3 = jiss.sequence(e, "s3")
+-- seq3:insert(0, jiss.lua_event("note_on(0, C(2), 127)"))
+-- seq3:insert(4 * tick, jiss.lua_event("s:relocate(0)"))
+-- seq3:start()
+-- 
+-- e:append(seq3)
 e:at(2):connect("ardour:MIDI 3/midi_in 1")
-
+-- 
 e:start()
 
 -- wait until the user presses a key

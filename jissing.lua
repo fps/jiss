@@ -1,5 +1,16 @@
 require "jiss"
 
+local get_sequence = 
+function (table, key) 
+	-- return current sequence when key s is requested
+	if "s" == key then
+		return e:current_sequence()
+	end
+	return nil
+end
+
+setmetatable(_G, { __index = get_sequence })
+
 -- require "LibCompress/LibCompress"
 
 -- create a named sequence from a table of string events {{t1, e1}, {t2, e2}, ... }
