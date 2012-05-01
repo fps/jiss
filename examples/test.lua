@@ -28,6 +28,11 @@ play(lua_seq(e, "seq3", lines(tick,
 															  note_on(0, C(2), 127)
 
 
+
+
+															  note_on(0, G(3)-1, 127)
+
+
 															  s:relocate(0)
 													  ]])))
 
