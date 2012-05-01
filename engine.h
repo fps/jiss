@@ -173,6 +173,12 @@ struct engine {
 		write_blocking_command(::assign(sequences, p));
 	}
 
+	void remove(const int index) {
+		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
+		p->t.erase(p->t.begin() + index);
+		write_blocking_command(::assign(sequences, p));
+	}
+
 	int process(jack_nframes_t nframes, void *arg);
 
 	//! never call in process

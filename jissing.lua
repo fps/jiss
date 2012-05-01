@@ -106,79 +106,24 @@ end
 
 
 -- note names
-function C(octave)
-	return 12 * octave
-end
-
--- note names
-function D(octave)
-	return 12 * octave + 2
-end
-
--- note names
-function E(octave)
-	return 12 * octave + 4
-end
-
--- note names
-function F(octave)
-	return 12 * octave + 5
-end
-
--- note names
-function G(octave)
-	return 12 * octave + 7
-end
-
--- note names
-function A(octave)
-	return 12 * octave + 9
-end
-
--- note names
-function B(octave)
-	return 12 * octave + 11
-end
+function C(octave) return 12 * octave end
+function D(octave) return 12 * octave + 2 end
+function E(octave) return 12 * octave + 4 end
+function F(octave) return 12 * octave + 5 end
+function G(octave) return 12 * octave + 7 end
+function A(octave) return 12 * octave + 9 end
+function B(octave) return 12 * octave + 11 end
 
 -- tone collection
-function maj7(root) 
-	return { root, root + 4, root + 7, root + 11 }
-end
-
-function maj79(root) 
-	return { root, root + 4, root + 7, root + 11, root + 14 }
-end
-
-function maj7s11(root) 
-	return { root, root + 4, root + 7, root + 11, root + 14, root + 18 }
-end
-
-
-function min7(root)
-	return { root, root + 3, root + 7, root + 10 }
-end
-
-function dom7(root)
-	return { root, root + 4, root + 7, root + 10 }
-end
-
-function dom7s11(root)
-	return { root, root + 4, root + 7, root + 10 , root + 18 }
-end
-
-
-function dom7b9b13(root)
-	return { root, root + 4, root + 7, root + 10, root + 13, root + 20 }
-end
-
-
-function min7b5(root)
-	return { root, root + 3, root + 6, root + 10 }
-end
-
-function harmonic_minor(root)
-	return { root, root + 2, root + 3, root + 5, root + 7, root + 8, root + 11}
-end
+function maj7(root) return { root, root + 4, root + 7, root + 11 } end
+function maj79(root) return { root, root + 4, root + 7, root + 11, root + 14 } end
+function maj7s11(root) return { root, root + 4, root + 7, root + 11, root + 14, root + 18 } end
+function min7(root) return { root, root + 3, root + 7, root + 10 } end
+function dom7(root) return { root, root + 4, root + 7, root + 10 } end
+function dom7s11(root) return { root, root + 4, root + 7, root + 10 , root + 18 } end
+function dom7b9b13(root) return { root, root + 4, root + 7, root + 10, root + 13, root + 20 } end
+function min7b5(root) return { root, root + 3, root + 6, root + 10 } end
+function harmonic_minor(root) return { root, root + 2, root + 3, root + 5, root + 7, root + 8, root + 11} end
 
 
 -- return an array of notes filled from the scale between min and max

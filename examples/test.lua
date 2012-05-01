@@ -8,7 +8,7 @@ tick = e:get_samplerate()/8
 seq = jiss.sequence(e, "s1")
 seq:connect("ardour:MIDI 1/midi_in 1")
 
-seq:insert(0, jiss.lua_event("if math.random() > 0.7 then note_on(0, notes[math.random(#notes)], 127) end;"))
+seq:insert(0, jiss.lua_event("if math.random() > 0.8 then note_on(0, notes[math.random(#notes)], 127) end;"))
 seq:insert(tick, jiss.lua_event("s:relocate(0)"))
 
 e:append(seq)
@@ -16,14 +16,29 @@ e:at(0):start()
 
 
 seq2 = jiss.sequence(e, "s2")
-
 seq2:connect("ardour:MIDI 2/midi_in 1")
 
-seq2:insert(0, jiss.lua_event("if math.random() > 0.7 then note_on(0, notes[math.random(#notes)], 127) end;"))
+seq2:insert(0, jiss.lua_event("if math.random() > 0.8 then note_on(0, notes[math.random(#notes)], 127) end;"))
 seq2:insert(tick, jiss.lua_event("s:relocate(0)"))
+
 
 e:append(seq2)
 e:at(1):start()
+
+
+play(loop(8 * tick, lua_seq(e, "s3", lines(tick, 
+													  [[
+															  note_on(0, C(2), 127)
+
+
+
+															  note_on(0, G(2)-1, 127)
+															  note_on(0, D(3), 127)
+
+															  note_on(0, B(3), 127)
+													  ]]))))
+
+e:at(2):connect("ardour:MIDI 3/midi_in 1")
 
 e:start()
 
