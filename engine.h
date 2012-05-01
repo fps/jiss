@@ -181,14 +181,14 @@ struct engine {
 	//! never call in process
 	void start() {
 		//! turn GC off before entering STARTED state
-		lua_gc(lua_state, LUA_GCSTOP, 0);
+		// lua_gc(lua_state, LUA_GCSTOP, 0);
 		write_blocking_command(boost::bind(&engine::start_, this));
 	}
 
 	//! never call in process
 	void stop() {
 		write_blocking_command(boost::bind(&engine::stop_, this));
-		lua_gc(lua_state, LUA_GCRESTART, 0);
+		// lua_gc(lua_state, LUA_GCRESTART, 0);
 		//! run GC after stopping :D
 	}
 
