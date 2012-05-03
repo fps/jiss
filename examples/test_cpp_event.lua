@@ -4,7 +4,7 @@ require "jissing"
 -- like with all self contained jiss scripts we start by creating the engine
 e = jiss.engine()
 
-tick = e:get_samplerate()/8
+tick = e:get_samplerate()/16
 
 -- e:exec_cpp_event executes the event in non-RT context, so
 -- one can allocate stuff there, etc..
@@ -24,7 +24,7 @@ play(loop(tick, cpp_seq(e, "rand", lines(1.0,
 ))))
 
 -- connect all sequence outputs to "jass:in"
-connect(e,"jass:in")
+connect(e,"ardour:MIDI 1/midi_in 1")
 
 -- start the processing
 e:start()

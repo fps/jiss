@@ -24,17 +24,17 @@ e:append(seq2)
 e:at(1):start()
 
 play(lua_seq(e, "seq3", lines(tick, 
-													  [[
-															  note_on(0, C(3), 127)
+										[[
+												note_on(0, C(3), 127)
 
 
 
 
-															  note_on(0, G(3)-1, 127)
+												note_on(0, G(3)-1, 127)
 
 
-															  s:relocate(0)
-													  ]])))
+												s:relocate(0)
+										]])))
 
 e:at(2):connect("ardour:MIDI 3/midi_in 1")
 -- 
@@ -42,5 +42,4 @@ e:start()
 
 -- wait until the user presses a key
 io.stdin:read'*l'
-
 
