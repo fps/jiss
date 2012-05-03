@@ -29,6 +29,6 @@ format_xs =
 
 tick = e:get_samplerate()/4
 
-play(loop(16 * tick, lua_seq(e, "s1", format_xs(tick, p, "print('hi ' .. %s)", {x="10", y=20, z=30}))))
+play(loop(16 * tick, cpp_seq(e, "s1", format_xs(tick, p, 'std::cout<< "hi %s" << std::endl;', {x="10", y=20, z=30}))))
 
 e:start()
