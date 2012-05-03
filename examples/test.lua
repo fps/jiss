@@ -25,7 +25,7 @@ e:at(1):start()
 
 play(lua_seq(e, "seq3", lines(tick, 
 													  [[
-															  note_on(0, C(2), 127)
+															  note_on(0, C(2), 127); print("hi")
 
 
 
