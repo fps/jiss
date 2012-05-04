@@ -86,6 +86,9 @@ struct sequence {
 		events.insert(std::make_pair(t, event_ptr(new lua_event(e)))); 
 	}
 
+	void start(jiss_time t);
+	void stop(jiss_time t);
+
 	void start();
 	void stop();
 

@@ -51,11 +51,22 @@ struct engine {
 	//! set by each sequence while it runs
 	jiss_time seq_time_in_buffer;
 
+	jiss_time current_time;
+
 	gc_sequence_ptr_vector_ptr sequences;
 
 	command_ringbuffer commands;
 
 	ringbuffer<char> acks;
+
+	lua_State *lua_state;
+
+	//! This variable can be used from within cpp_events
+	//! to setup/access global state.
+	boost::shared_ptr<disposable<std::vector<store_base_ptr> > > storage;
+
+
+
 
 	engine();
 
@@ -65,9 +76,60 @@ struct engine {
 		lua_close(lua_state);
 	}
 
-	//! This variable can be used from within cpp_events
-	//! to setup/access global state.
-	boost::shared_ptr<disposable<std::vector<store_base_ptr> > > storage;
+
+	//! These functions are safe to be executed not in the process
+	//! callback
+
+	//! Assign a new sequence to existing sequence at index
+	void assign(unsigned int index, sequence &s) {
+		//! copy existing sequences into a new vector
+		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
+
+		//! Assign the new sequence at the index
+		p->t[index] = disposable<sequence>::create(s);
+
+		//! commit to process thread
+		register_sequence(p->t[index]->t);
+
+		write_blocking_command(::assign(sequences, p));
+	}
+
+	//! Append sequence to the vector of sequences
+	void append(sequence &s) {
+		//gc_sequence_ptr_vector_ptr new_seqs = gc_
+		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
+		gc_sequence_ptr s2 = gc_sequence::create(s);
+		// std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
+		p->t.push_back(s2);
+		register_sequence(s2->t);
+		write_blocking_command(::assign(sequences, p));
+	}
+
+	void remove(const int index) {
+		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
+		p->t.erase(p->t.begin() + index);
+		write_blocking_command(::assign(sequences, p));
+	}
+
+
+	//! never call in process
+	void start() {
+		//! turn GC off before entering STARTED state
+		// lua_gc(lua_state, LUA_GCSTOP, 0);
+		write_blocking_command(boost::bind(&engine::start_, this));
+	}
+
+	//! never call in process
+	void stop() {
+		write_blocking_command(boost::bind(&engine::stop_, this));
+		// lua_gc(lua_state, LUA_GCRESTART, 0);
+		//! run GC after stopping :D
+	}
+
+
+
+	//! Do not call these functions from outside the process
+	//! callback
 
 	//! access element index of store as T. might raise an exception when the
 	//! cast fails
@@ -85,8 +147,6 @@ struct engine {
 	void storage_append(const T &t) {
 		storage->t.push_back(store_base_ptr(new store<T>(t)));
 	}
-
-	lua_State *lua_state;
 
 	//! Run a lua script in the engine global context
 	void run(const std::string &code);
@@ -145,61 +205,14 @@ struct engine {
 
 	void register_sequence(const sequence &s);
 
-	//! Assign a new sequence to existing sequence at index
-	void assign(unsigned int index, sequence &s) {
-		//! copy existing sequences into a new vector
-		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
-
-		//! Assign the new sequence at the index
-		p->t[index] = disposable<sequence>::create(s);
-
-		//! commit to process thread
-		register_sequence(p->t[index]->t);
-
-		write_blocking_command(::assign(sequences, p));
-	}
-
-	//! Append sequence to the vector of sequences
-	void append(sequence &s) {
-		//gc_sequence_ptr_vector_ptr new_seqs = gc_
-		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
-		gc_sequence_ptr s2 = gc_sequence::create(s);
-		// std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
-		p->t.push_back(s2);
-		register_sequence(s2->t);
-		write_blocking_command(::assign(sequences, p));
-	}
-
-	void remove(const int index) {
-		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
-		p->t.erase(p->t.begin() + index);
-		write_blocking_command(::assign(sequences, p));
-	}
-
 	int process(jack_nframes_t nframes, void *arg);
 
-	//! never call in process
-	void start() {
-		//! turn GC off before entering STARTED state
-		// lua_gc(lua_state, LUA_GCSTOP, 0);
-		write_blocking_command(boost::bind(&engine::start_, this));
-	}
-
-	//! never call in process
-	void stop() {
-		write_blocking_command(boost::bind(&engine::stop_, this));
-		// lua_gc(lua_state, LUA_GCRESTART, 0);
-		//! run GC after stopping :D
-	}
-
-	//! Call only from process thread
-	void start_() {
+	void rt_start() {
 		//std::cout << "start" << std::endl;
 		state = STARTED;
 	}
 
-	//! Call only from process thread
-	void stop_() {
+	void rt_stop_() {
 		//std::cout << "stop" << std::endl;
 		state = STOPPED;
 	}
@@ -207,6 +220,8 @@ struct engine {
 	jack_nframes_t get_samplerate() {
 		return jack_get_sample_rate(client);
 	}
+
+
 };
 
 #endif

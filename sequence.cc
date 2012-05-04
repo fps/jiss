@@ -53,3 +53,10 @@ void sequence::bind_sequence_var() {
 	luaL_dostring(e->lua_state, s_bind.c_str());
 }
 
+void sequence::start(jiss_time t) {
+
+}
+
+void sequence::stop(jiss_time t) {
+
+}
