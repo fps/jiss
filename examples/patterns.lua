@@ -1,7 +1,10 @@
 require "jissing"
 
+--- create engine
 e = jiss.engine()
 
+
+--- setup a pattern
 p = [[
 x   x   x   x   
   y   y   y   y
