@@ -1,6 +1,8 @@
 .PHONY: jiss.so
 
 jiss.so:
+	install -d doc/lua
+	install -d doc/cpp
 	swig -c++ -lua -external-runtime luarun.h
 	swig -c++ -lua jiss.i
 	luadoc -d doc/lua *.lua examples/*.lua
