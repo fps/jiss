@@ -106,7 +106,7 @@ function cpp_event(code)
 
 	-- compile the assembled function into object file
 	-- TODO: fix up all the things to make this more convenient
-	os.execute("g++ -g -fPIC -I. -I/usr/include/lua5.1 -o " .. filename .. ".so -shared " .. filename .. ".cc -Wl,-rpath=. jiss.so")
+	os.execute("g++ -g -fPIC -I. -I /opt/local/include -I /usr/local/include -I/usr/include/lua5.1 -o " .. filename .. ".so -shared " .. filename .. ".cc -Wl,-rpath=. jiss.so")
 
 	local c =  jiss.cpp_event(filename .. ".so", funcname)
 	
