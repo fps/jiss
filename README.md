@@ -31,7 +31,9 @@ Then do some stuff:
 
 # Documentation?
 
-This is still a prototype, so don't expect anything :D Read the code. It's small..
+This is still a prototype, so don't expect anything :D Read the code. It's small.. Do checkout the wikie though:
+
+[https://github.com/fps/jiss/wiki](https://github.com/fps/jiss/wiki)
 
 
 # Author
