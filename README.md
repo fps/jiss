@@ -35,6 +35,11 @@ This is still a prototype, so don't expect anything :D Read the code. It's small
 
 [https://github.com/fps/jiss/wiki](https://github.com/fps/jiss/wiki)
 
+You can also generate some docs from the source running 
+
+> make doc
+
+This will create documentation in the doc/ folder
 
 # Author
 
