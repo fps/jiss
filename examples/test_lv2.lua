@@ -14,7 +14,7 @@ tick = e:get_samplerate()/20
 e:exec_cpp_event(cpp_event(
 [[
 		e.storage_append(0);
-		e.storage_append(lv2("http://calf.sourceforge.net/plugins/Monosynth", e)); 
+		e.storage_append(lv2_ptr(new lv2("http://calf.sourceforge.net/plugins/Monosynth", e))); 
 ]]
 ))
 

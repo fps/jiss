@@ -124,11 +124,9 @@ struct engine {
 
 	void exec_cpp_event(cpp_event *l) {
 		try {
-			jdbg("exec_cpp_event()")
 			l->o->f();
-			jdbg("done()")
 		} catch (...) {
-
+			jdbg("some exception occured")
 		}
 	}
 

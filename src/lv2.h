@@ -20,6 +20,8 @@ struct lv2 {
 	}
 };
 
+typedef boost::shared_ptr<lv2> lv2_ptr;
+
 } // namespace
 
 #endif

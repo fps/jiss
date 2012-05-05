@@ -3,8 +3,8 @@
 
 all: jiss.so
 
-# CFLAGS ?= -DJISS_NO_DEBUG -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
-CFLAGS ?= -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
+CFLAGS ?= -DJISS_NO_DEBUG -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
+# CFLAGS ?= -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
 CXXFLAGS ?= ${CFLAGS}
 LDFLAGS ?=  -Wl,-rpath=. `pkg-config lua5.1 jack lilv-0 --libs`
 

@@ -45,7 +45,7 @@ void sequence::stop() {
 }
 
 void sequence::exec_cpp_event(cpp_event *c) {
-	c->o->f();
+	e->exec_cpp_event(c);
 }
 
 void sequence::exec_lua_event(lua_event *l) {
