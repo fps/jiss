@@ -8,6 +8,11 @@ jiss - Jack Interactive Sequencer Software
 * liblua5.1-0-dev
 * swig
 * swig-lua
+* boost-shared-pointer
+* boost-function
+* libjack-dev
+* lua-md5
+
 
 # How to build?
 
