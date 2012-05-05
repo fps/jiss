@@ -1,5 +1,6 @@
 #include "engine.h"
 #include "luarun.h"
+#include "debug.h"
 
 extern "C" {
         int process(jack_nframes_t nframes, void *arg) {
@@ -66,18 +67,22 @@ engine::engine() :
 	commands(1024),
 	cmds_pending(0)
 {
+	jdbg("engine()")
 	//! create the storage for cpp code
 	storage = disposable<std::vector<boost::shared_ptr<store_base> > >::create(std::vector<boost::shared_ptr<store_base> >());
 	
+	jdbg("setup lua")
+
 	lua_state = luaL_newstate();
 	luaL_openlibs(lua_state);
 	luaL_dostring(lua_state, "require \"jiss\"");
 	luaL_dostring(lua_state, "require \"jissing\"");
 
 	//! Every lua script will have a variable called e in it pointing to the engine object :D
-	SWIG_NewPointerObj(lua_state, this, SWIG_TypeQuery(lua_state, "engine*"), 0);
+	SWIG_NewPointerObj(lua_state, this, SWIG_TypeQuery(lua_state, "jiss::engine*"), 0);
 	lua_setglobal(lua_state, "e");
 
+	jdbg("creating jack client")
 	client = jack_client_open("jiss", JackNullOption, 0);
 	jack_set_process_callback(client, ::process, this);
 	jack_activate(client);

@@ -5,7 +5,7 @@
 
 namespace jiss {
 
-typedef jack_nframes_t jiss_time;
+typedef unsigned long long jiss_time;
 
 } // namespace
 

@@ -172,7 +172,7 @@ struct engine {
 		state = STOPPED;
 	}
 
-	jack_nframes_t get_samplerate() {
+	jiss_time get_samplerate() {
 		return jack_get_sample_rate(client);
 	}
 

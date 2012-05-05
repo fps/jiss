@@ -10,6 +10,7 @@
 	#include "disposable.h"
 	#include "heap.h"
 	#include <boost/shared_ptr.hpp>
+
 	using namespace jiss;
 %}
 
@@ -28,7 +29,7 @@
 
 using namespace jiss;
 
-%apply unsigned long long { jiss::jiss_time }
+%apply unsigned long long { jiss_time }
 %apply unsigned long long { jack_nframes_t }
 
 namespace std {
