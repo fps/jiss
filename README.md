@@ -1,6 +1,4 @@
-# Huh?
-
-jiss - Jack Interactive Sequencer Software
+# jiss - Jack Interactive Sequencer Software
 
 # Dependencies
 
