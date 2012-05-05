@@ -95,30 +95,34 @@ function midi_sequence(e, name, time, notes)
 end
 
 function cpp_event(code)
-	print ("compiling cpp code: \n" .. code)
 	--- TODO generate UNIQUE name
-	local funcname = "run".. math.random(1000000)
-
-	print("hash: " .. md5.sumhexa(code))
+	local hash = md5.sumhexa(code)
+	local funcname = "run".. hash
 
 	--- setup the wrapper code
 	local code = '#include <cstdlib>\n#include<cmath>\n#include <iostream>\n#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void ' .. funcname .. '() {\n    using namespace jiss;\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
 	--- print(code)
 
 	--- TODO handle cleanup in some non-retarded way?
-	local filename = os.tmpname()
-	io.output(filename .. ".cc")
-	io.write(code)
-	io.flush()
+	local filename = "/tmp/jiss_" .. hash 
 
-	--- compile the assembled function into object file
-	--- TODO: fix up all the things to make this more convenient
-	os.execute("g++ -g -fPIC -I. -I /opt/local/include -I /usr/local/include -I/usr/include/lua5.1 -o " .. filename .. ".so -shared " .. filename .. ".cc -Wl,-rpath=. jiss.so")
+	if nil == io.open(filename .. ".so") then
+		print ("compiling cpp code: \n" .. code)
+
+		io.output(filename .. ".cc")
+		io.write(code)
+		io.flush()
+
+		--- compile the assembled function into object file
+		--- TODO: fix up all the things to make this more convenient
+		os.execute("g++ -g -fPIC -I. -I /opt/local/include -I /usr/local/include -I/usr/include/lua5.1 -o " .. filename .. ".so -shared " .. filename .. ".cc -Wl,-rpath=. jiss.so")
+
+		os.execute("rm " .. filename .. ".cc")
+	end
 
 	local c =  jiss.cpp_event(filename .. ".so", funcname)
-	
-	os.execute("rm " .. filename .. ".cc")
-	os.execute("rm " .. filename .. ".so")
+
+	-- os.execute("rm " .. filename .. ".so")
 	return c
 end
 
