@@ -90,8 +90,8 @@ engine::engine(const std::string name) :
 	jack_activate(client);
 	// jack_cycle_wait(client);
 
-	default_sequence = sequence(this);
-	s  = &default_sequence;
+	default_sequence = new sequence(this);
+	s  = default_sequence;
 }
 
 }

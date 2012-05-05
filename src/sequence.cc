@@ -19,6 +19,7 @@ sequence::sequence(engine *e, const std::string &name) :
 }
 
 sequence::~sequence() {
+	jdbg("~sequence()")
 	jack_port_unregister(e->client, port);
 }
 

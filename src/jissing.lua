@@ -101,7 +101,7 @@ function cpp_event(code)
 
 	--- setup the wrapper code
 	local code = 
-		[[
+[[
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
@@ -118,9 +118,10 @@ extern "C" {
   }
 }
 ]]
+	-- just a comment :D
 
 	sohash = md5.sumhexa(code)
-		
+	
 	--- TODO handle cleanup in some non-retarded way?
 
 	local filename_base = "/tmp/jiss_" .. sohash 

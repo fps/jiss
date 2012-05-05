@@ -76,9 +76,15 @@ struct engine {
 
 	~engine() {
 		jdbg("~engine()")
+
 		clear();
 
+		heap::get()->cleanup();
+
+		delete default_sequence;
+
 		jdbg("we're clear")
+
 		jack_client_close(client);
 		jack_deactivate(client);
 		lua_close(lua_state);
@@ -130,14 +136,15 @@ struct engine {
 	}
 
 	//! Will return the currently processing sequence
-	sequence default_sequence;
+	sequence *default_sequence;
 	sequence *s;
 	sequence *current_sequence() {
 		return s;
 	}
 
 	void clear() {
-		write_blocking_command(boost::bind(&engine::clear, this));
+		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create();
+		write_blocking_command(jiss::assign(sequences, p));
 	}
 
 	unsigned int num_sequences() {
