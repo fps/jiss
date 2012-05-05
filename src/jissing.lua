@@ -107,6 +107,7 @@ function cpp_event(code)
 #include <iostream>
 #include "engine.h"
 #include "sequence.h"
+#include "lv2.h"
 			
 extern "C" {
   void ]] .. funcname .. [[ () {
@@ -135,16 +136,21 @@ extern "C" {
 
 		--- compile the assembled function into object file
 		--- TODO: fix up all the things to make this more convenient
-		os.execute("g++ -g -fPIC -I. -I /opt/local/include -I /usr/local/include -I/usr/include/lua5.1 -o " .. filename_base .. ".so -shared " .. filename_base .. ".cc -Wl,-rpath=. jiss.so")
+		os.execute("g++ -g -fPIC -I. `pkg-config lua5.1 jack lilv-0 --cflags` -o " .. filename_base .. ".so -shared " .. filename_base .. ".cc -Wl,-rpath=. jiss.so")
 
 		os.execute("rm " .. filename_base .. ".cc")
 	end
 
-	print("cpp_event: " .. filename_base .. ".so  " .. funcname)
-	local c =  jiss.cpp_event(filename_base .. ".so", funcname)
+	-- print("cpp_event: " .. filename_base .. ".so  " .. funcname)
+	if nil ~= io.open(filename_base .. ".so") then 
+		local c =  jiss.cpp_event(filename_base .. ".so", funcname)
 
-	-- os.execute("rm " .. filename_base .. ".so")
-	return c
+		-- os.execute("rm " .. filename_base .. ".so")
+		return c
+	else
+		print("compilation failed")
+		return nil
+	end
 end
 
 
