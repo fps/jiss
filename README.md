@@ -1,13 +1,14 @@
-- Huh?
+# Huh?
 
 jiss - Jack Interactive Sequencer Software
 
 
-- How to build?
+# How to build?
 
-See the INSTALL file
+> make
+> sudo make install
 
-- How to run?
+# How to run?
 
 In the build folder try:
 
@@ -21,12 +22,12 @@ lua
 > -- e.g. load test.lua and work with it
 > require "test"
 
-- Documentation?
+# Documentation?
 
 This is still a prototype, so don't expect anything :D Read the code. It's small..
 
 
-- Author
+# Author
 
 Florian Paul Schmidt (mista.tapas at gmx dot net)
 
