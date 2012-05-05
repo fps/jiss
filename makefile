@@ -1,4 +1,8 @@
 
+.PHONY: all
+
+all: jiss.so
+
 CFLAGS ?= -fPIC `pkg-config lua5.1 jack --cflags`
 CXXFLAGS ?= ${CFLAGS}
 LDFLAGS ?=  `pkg-config lua5.1 jack --libs`
@@ -22,3 +26,10 @@ doc:
 
 clean:
 	rm -rf *.o *.so jiss_wrap.cc luarun.h
+
+
+INSTALL = install
+install: all
+	$(INSTALL) -d `pkg-config --variable=INSTALL_CMOD lua5.1`
+	$(INSTALL) jiss.so `pkg-config --variable=INSTALL_CMOD lua5.1`
+	$(INSTALL) jissing.lua `pkg-config --variable=INSTALL_LMOD lua5.1`
