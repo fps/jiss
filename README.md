@@ -11,9 +11,9 @@ jiss - Jack Interactive Sequencer Software
 
 # How to run?
 
-In the build folder try:
+> lua -i examples/test.lua
 
-> lua examples/test.lua
+The -i switch causes lua to keep running after executing the script. This is what you want most of the time
 
 Or you can also open an interactive session via
 
@@ -31,7 +31,7 @@ Then do some stuff:
 
 # Documentation?
 
-This is still a prototype, so don't expect anything :D Read the code. It's small.. Do checkout the wikie though:
+This is still a prototype, so don't expect anything :D Read the code. It's small.. Do checkout the wiki though:
 
 [https://github.com/fps/jiss/wiki](https://github.com/fps/jiss/wiki)
 
