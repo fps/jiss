@@ -13,11 +13,13 @@ jiss - Jack Interactive Sequencer Software
 
 In the build folder try:
 
-lua test.lua
+> lua examples/test.lua
 
 Or you can also open an interactive session via
 
-lua
+> lua
+
+Then do some stuff:
 
 > require "jiss"
 
