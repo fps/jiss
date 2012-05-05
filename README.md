@@ -2,6 +2,12 @@
 
 jiss - Jack Interactive Sequencer Software
 
+# Dependencies
+
+* lua5.1
+* liblua5.1-0-dev
+* swig
+* swig-lua
 
 # How to build?
 
