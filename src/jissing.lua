@@ -111,6 +111,7 @@ function cpp_event(code)
 extern "C" {
   void ]] .. funcname .. [[ () {
   using namespace jiss;
+
   engine &e = *(engine::get());
   sequence &s = *(e.current_sequence());
 ]]	.. code .. [[
