@@ -1,6 +1,8 @@
 #ifndef ASSIGN_HH
 #define ASSIGN_HH
 
+namespace jiss {
+
 template<class U, class T>
 struct assign_fun {
 	U &u;
@@ -16,5 +18,8 @@ assign_fun<U,T>
 assign(U &u,  const T& t) {
 	return assign_fun<U, T>(u, t);
 }
+
+} // namespace
+
 
 #endif

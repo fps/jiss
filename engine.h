@@ -29,10 +29,13 @@ extern "C" {
 #include "types.h"
 #include "store.h"
 
-
 extern "C" { 
 	int process(jack_nframes_t nframes, void *arg); 
 }
+
+
+namespace jiss {
+
 
 typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
 
@@ -188,7 +191,7 @@ struct engine {
 		//! commit to process thread
 		register_sequence(p->t[index]->t);
 
-		write_blocking_command(::assign(sequences, p));
+		write_blocking_command(jiss::assign(sequences, p));
 	}
 
 	//! Append sequence to the vector of sequences
@@ -199,13 +202,13 @@ struct engine {
 		// std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
 		p->t.push_back(s2);
 		register_sequence(s2->t);
-		write_blocking_command(::assign(sequences, p));
+		write_blocking_command(jiss::assign(sequences, p));
 	}
 
 	void remove(const int index) {
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
 		p->t.erase(p->t.begin() + index);
-		write_blocking_command(::assign(sequences, p));
+		write_blocking_command(jiss::assign(sequences, p));
 	}
 
 
@@ -223,6 +226,8 @@ struct engine {
 
 
 };
+
+} // namespace
 
 #endif
 

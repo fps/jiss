@@ -1,9 +1,24 @@
-.PHONY: jiss.so
 
-jiss.so:
+CFLAGS ?= -fPIC `pkg-config lua5.1 jack --cflags`
+CXXFLAGS ?= ${CFLAGS}
+LDFLAGS ?=  `pkg-config lua5.1 jack --libs`
+
+jiss.so: luarun.h jiss_wrap.o disposable.o engine.o heap.o main.o sequence.o
+	g++ -O3 -rdynamic -Wall -shared -fPIC $(CFLAGS) -o jiss.so *.o $(LDFLAGS) 
+
+luarun.h:
+	swig -c++ -lua -external-runtime luarun.h
+
+jiss_wrap.cc: jiss.i *.h 
+	swig -c++ -debug-classes  -o jiss_wrap.cc -lua jiss.i 
+
+.PHONY: doc clean
+
+doc:
 	install -d doc/lua
 	install -d doc/cpp
-	swig -c++ -lua -external-runtime luarun.h
-	swig -c++ -lua jiss.i
-	luadoc -d doc/lua *.lua examples/*.lua
-	g++ -O3 -rdynamic -Wall -shared -fPIC -I /opt/local/include -I /usr/include/lua5.1 -o jiss.so *.cc *.cxx -L /opt/local/lib -L /usr/local/lib -llua5.1 -ljack 
+	luadoc -d doc/lua *.lua 
+
+
+clean:
+	rm -rf *.o *.so jiss_wrap.cc luarun.h

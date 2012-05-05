@@ -2,6 +2,8 @@
 
 #include "engine.h"
 
+namespace jiss {
+
 sequence::sequence(engine *e, const std::string &name) : 
 	state(STOPPED),
 	name(name),
@@ -32,11 +34,11 @@ void sequence::start_() {
 
 
 void sequence::start() {
-	e->write_blocking_command(::assign(state, STARTED));
+	e->write_blocking_command(jiss::assign(state, STARTED));
 }
 
 void sequence::stop() {
-	e->write_blocking_command(::assign(state, STOPPED));
+	e->write_blocking_command(jiss::assign(state, STOPPED));
 }
 
 void sequence::exec_cpp_event(cpp_event *c) {
@@ -60,3 +62,5 @@ void sequence::start(jiss_time t) {
 void sequence::stop(jiss_time t) {
 
 }
+
+} // namespace

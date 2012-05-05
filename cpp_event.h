@@ -7,6 +7,8 @@
 #include <dlfcn.h>
 #include <boost/shared_ptr.hpp>
 
+namespace jiss {
+
 typedef void(*cpp_func)();
 
 
@@ -46,5 +48,7 @@ struct cpp_event : public event {
 
 	}
 };
+
+} // namespace
 
 #endif

@@ -5,9 +5,13 @@
 
 #include <string>
 
+namespace jiss {
+
 struct console_event : public event {
 	std::string msg;
 };
+
+} // namespace
 
 #endif
 

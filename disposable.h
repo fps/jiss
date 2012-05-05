@@ -8,6 +8,8 @@
 
 #include <iostream>
 
+namespace jiss {
+
 template <class T>
 struct disposable : public disposable_base {
 	T t;
@@ -38,5 +40,6 @@ struct disposable : public disposable_base {
 		}
 };
 
+} // namespace
 
 #endif

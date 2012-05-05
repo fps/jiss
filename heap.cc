@@ -1,4 +1,6 @@
 #include "heap.h"
 
-heap *heap::instance = 0;
+
+
+jiss::heap *jiss::heap::instance = 0;
 

@@ -3,7 +3,11 @@
 
 #include <jack/jack.h>
 
+namespace jiss {
+
 typedef jack_nframes_t jiss_time;
+
+} // namespace
 
 #endif
 

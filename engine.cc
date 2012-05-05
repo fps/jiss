@@ -3,9 +3,13 @@
 
 extern "C" {
         int process(jack_nframes_t nframes, void *arg) {
-                return ((engine*)arg)->process(nframes, arg);
+                return ((jiss::engine*)arg)->process(nframes, arg);
         }
 }
+
+
+namespace jiss {
+
 
 engine *engine::e = 0;
 
@@ -79,4 +83,4 @@ engine::engine() :
 	jack_activate(client);
 }
 
-
+}
