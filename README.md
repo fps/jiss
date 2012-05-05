@@ -6,6 +6,7 @@ jiss - Jack Interactive Sequencer Software
 # How to build?
 
 > make
+
 > sudo make install
 
 # How to run?
@@ -17,9 +18,13 @@ lua test.lua
 Or you can also open an interactive session via
 
 lua
+
 > require "jiss"
+
 > -- do your funky stuff here
+
 > -- e.g. load test.lua and work with it
+
 > require "test"
 
 # Documentation?
