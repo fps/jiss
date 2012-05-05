@@ -97,32 +97,48 @@ end
 function cpp_event(code)
 	--- TODO generate UNIQUE name
 	local hash = md5.sumhexa(code)
-	local funcname = "run".. hash
+	local funcname = "run" .. hash
 
 	--- setup the wrapper code
-	local code = '#include <cstdlib>\n#include<cmath>\n#include <iostream>\n#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void ' .. funcname .. '() {\n    using namespace jiss;\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
-	--- print(code)
-
+	local code = 
+		[[
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include "engine.h"
+#include "sequence.h"
+			
+extern "C" {
+  void ]] .. funcname .. [[ () {
+  using namespace jiss;
+  engine &e = *(engine::get());
+  sequence &s = *(e.current_sequence());
+]]	.. code .. [[
+  }
+}
+]]
+		
 	--- TODO handle cleanup in some non-retarded way?
-	local filename = "/tmp/jiss_" .. hash 
+	local filename_base = "/tmp/jiss_" .. hash 
 
-	if nil == io.open(filename .. ".so") then
-		print ("compiling cpp code: \n" .. code)
+	if nil == io.open(filename_base .. ".so") then
+		print ("compiling cpp code: \n----- \n" .. code .. "\n----")
 
-		io.output(filename .. ".cc")
+		io.output(filename_base .. ".cc")
 		io.write(code)
 		io.flush()
 
 		--- compile the assembled function into object file
 		--- TODO: fix up all the things to make this more convenient
-		os.execute("g++ -g -fPIC -I. -I /opt/local/include -I /usr/local/include -I/usr/include/lua5.1 -o " .. filename .. ".so -shared " .. filename .. ".cc -Wl,-rpath=. jiss.so")
+		os.execute("g++ -g -fPIC -I. -I /opt/local/include -I /usr/local/include -I/usr/include/lua5.1 -o " .. filename_base .. ".so -shared " .. filename_base .. ".cc -Wl,-rpath=. jiss.so")
 
-		os.execute("rm " .. filename .. ".cc")
+		os.execute("rm " .. filename_base .. ".cc")
 	end
 
-	local c =  jiss.cpp_event(filename .. ".so", funcname)
+	print("cpp_event: " .. filename_base .. ".so  " .. funcname)
+	local c =  jiss.cpp_event(filename_base .. ".so", funcname)
 
-	-- os.execute("rm " .. filename .. ".so")
+	-- os.execute("rm " .. filename_base .. ".so")
 	return c
 end
 

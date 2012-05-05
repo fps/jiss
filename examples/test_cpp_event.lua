@@ -4,7 +4,9 @@ require "jissing"
 -- like with all self contained jiss scripts we start by creating the engine
 e = jiss.engine()
 
-tick = e:get_samplerate()/16
+-- os.execute("sleep 2")
+
+tick = e:get_samplerate()/20
 
 -- e:exec_cpp_event executes the event in non-RT context, so
 -- one can allocate stuff there, etc..
