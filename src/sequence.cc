@@ -13,7 +13,9 @@ sequence::sequence(engine *e, const std::string &name) :
 	was_relocated(false)
 { 
 	s_bind = "s = " + name;
-	port = jack_port_register(e->client, name.c_str(), JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput | JackPortIsTerminal, 0);
+	if (0 != e) {
+		port = jack_port_register(e->client, name.c_str(), JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput | JackPortIsTerminal, 0);
+	}
 }
 
 sequence::~sequence() {

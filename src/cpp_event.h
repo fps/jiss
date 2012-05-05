@@ -27,7 +27,7 @@ struct cpp_object  {
 	cpp_object(const std::string sofile, const std::string func_name) {
 		jdbg("cpp_object()")
 		// std::cout << sofile << " : " << func_name << std::endl;
-		fd = dlopen(sofile.c_str(), RTLD_NOW);
+		fd = dlopen(sofile.c_str(), RTLD_NOW | RTLD_LOCAL);
 		if (fd == 0) jdbg("dlopen failed: " << dlerror());
 
 		f = (cpp_func) ((void*)dlsym(fd, func_name.c_str()));
@@ -35,6 +35,7 @@ struct cpp_object  {
 	}
 
 	~cpp_object() {
+		jdbg("~cpp_object")
 		dlclose(fd);
 	}
 

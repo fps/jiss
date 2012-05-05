@@ -28,6 +28,7 @@ extern "C" {
 #include "assign.h"
 #include "types.h"
 #include "store.h"
+#include "debug.h"
 
 extern "C" { 
 	int process(jack_nframes_t nframes, void *arg); 
@@ -74,6 +75,10 @@ struct engine {
 	engine(const std::string name = "jiss");
 
 	~engine() {
+		jdbg("~engine()")
+		clear();
+
+		jdbg("we're clear")
 		jack_client_close(client);
 		jack_deactivate(client);
 		lua_close(lua_state);
@@ -125,6 +130,7 @@ struct engine {
 	}
 
 	//! Will return the currently processing sequence
+	sequence default_sequence;
 	sequence *s;
 	sequence *current_sequence() {
 		return s;

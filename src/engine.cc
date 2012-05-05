@@ -67,6 +67,8 @@ engine::engine(const std::string name) :
 	commands(1024),
 	cmds_pending(0)
 {
+	e = this;
+
 	jdbg("engine()")
 	//! create the storage for cpp code
 	storage = disposable<std::vector<boost::shared_ptr<store_base> > >::create(std::vector<boost::shared_ptr<store_base> >());
@@ -86,6 +88,10 @@ engine::engine(const std::string name) :
 	client = jack_client_open(name.c_str(), JackNullOption, 0);
 	jack_set_process_callback(client, ::process, this);
 	jack_activate(client);
+	// jack_cycle_wait(client);
+
+	default_sequence = sequence(this);
+	s  = &default_sequence;
 }
 
 }
