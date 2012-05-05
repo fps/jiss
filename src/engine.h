@@ -123,9 +123,13 @@ struct engine {
 	void exec_lua_event(lua_event *l) { run(l->code); };
 
 	void exec_cpp_event(cpp_event *l) {
-		jdbg("exec_cpp_event()")
-		l->o->f();
-		jdbg("done()")
+		try {
+			jdbg("exec_cpp_event()")
+			l->o->f();
+			jdbg("done()")
+		} catch (...) {
+
+		}
 	}
 
 	//! Set to this in process(). This is only useful from within compiled cpp functions..
