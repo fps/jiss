@@ -11,10 +11,10 @@ extern "C" {
 
 namespace jiss {
 
-
 engine *engine::e = 0;
 
-void exec_lua(lua_State *state, const std::string &code) {
+
+void engine::exec_lua(lua_State *state, const std::string &code) {
 	luaL_dostring(state, code.c_str());
 }
 
@@ -27,7 +27,7 @@ void engine::register_sequence(const sequence &s) {
 
 void engine::run(const std::string &code) {
 	//write_blocking_command(boost::bind(exec_lua, lua_state, code.c_str()));
-	exec_lua(lua_state, code.c_str());
+	exec_lua(lua_state, code);
 }
 
 
@@ -61,7 +61,7 @@ int engine::process(jack_nframes_t frames, void *arg) {
 }
 	
 
-engine::engine() :
+engine::engine(const std::string name) :
 	state(STOPPED),
 	sequences(gc_sequence_ptr_vector::create(std::vector<gc_sequence_ptr>())),
 	commands(1024),
@@ -83,7 +83,7 @@ engine::engine() :
 	lua_setglobal(lua_state, "e");
 
 	jdbg("creating jack client")
-	client = jack_client_open("jiss", JackNullOption, 0);
+	client = jack_client_open(name.c_str(), JackNullOption, 0);
 	jack_set_process_callback(client, ::process, this);
 	jack_activate(client);
 }

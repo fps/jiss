@@ -71,7 +71,7 @@ struct engine {
 
 
 
-	engine();
+	engine(const std::string name = "jiss");
 
 	~engine() {
 		jack_client_close(client);
@@ -106,7 +106,9 @@ struct engine {
 	//! Run a lua script in the engine global context
 	void run(const std::string &code);
 
-	void exec_lua_event(lua_event *l) { run(l->code); }
+	void exec_lua(lua_State *state, const std::string &code);
+
+	void exec_lua_event(lua_event *l) { run(l->code); };
 
 	void exec_cpp_event(cpp_event *l) {
 		l->o->f();

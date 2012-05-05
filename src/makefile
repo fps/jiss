@@ -3,9 +3,9 @@
 
 all: jiss.so
 
-CFLAGS ?= -fPIC `pkg-config lua5.1 jack --cflags`
+CFLAGS ?= -O2 -g -Wall -fPIC `pkg-config lua5.1 jack --cflags`
 CXXFLAGS ?= ${CFLAGS}
-LDFLAGS ?=  `pkg-config lua5.1 jack --libs`
+LDFLAGS ?=  -Wl,-rpath=. `pkg-config lua5.1 jack --libs`
 
 jiss.so: luarun.h jiss_wrap.o disposable.o engine.o heap.o main.o sequence.o
 	g++ -O3 -rdynamic -Wall -shared -fPIC $(CFLAGS) -o jiss.so *.o $(LDFLAGS) 
