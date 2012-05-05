@@ -96,8 +96,8 @@ end
 
 function cpp_event(code)
 	--- TODO generate UNIQUE name
-	local hash = md5.sumhexa(code)
-	local funcname = "run" .. hash
+	local funchash = md5.sumhexa(code)
+	local funcname = "run" .. funchash
 
 	--- setup the wrapper code
 	local code = 
@@ -117,9 +117,12 @@ extern "C" {
   }
 }
 ]]
+
+	sohash = md5.sumhexa(code)
 		
 	--- TODO handle cleanup in some non-retarded way?
-	local filename_base = "/tmp/jiss_" .. hash 
+
+	local filename_base = "/tmp/jiss_" .. sohash 
 
 	if nil == io.open(filename_base .. ".so") then
 		print ("compiling cpp code: \n----- \n" .. code .. "\n----")
