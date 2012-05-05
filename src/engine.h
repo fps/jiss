@@ -99,7 +99,7 @@ struct engine {
 	//! access element index of store as T. might raise an exception when the
 	//! cast fails
 	template<class T> 
-	T &storage_at_rt(unsigned int index) {
+	T &storage_at(unsigned int index) {
 		return (boost::dynamic_pointer_cast<store<T> >(storage->t[index]))->t;
 	}
 

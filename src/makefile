@@ -19,9 +19,10 @@ jiss_wrap.cc: jiss.i *.h
 .PHONY: doc clean
 
 doc:
-	install -d doc/lua
-	install -d doc/cpp
-	luadoc -d doc/lua *.lua 
+	install -d ../doc/lua
+	install -d ../doc/cpp
+	luadoc -d ../doc/lua *.lua
+	doxygen Doxyfile
 
 
 clean:

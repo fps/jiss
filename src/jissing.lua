@@ -1,4 +1,5 @@
 require "jiss"
+require "md5"
 
 local get_sequence = 
 function (table, key) 
@@ -97,6 +98,8 @@ function cpp_event(code)
 	print ("compiling cpp code: \n" .. code)
 	--- TODO generate UNIQUE name
 	local funcname = "run".. math.random(1000000)
+
+	print("hash: " .. md5.sumhexa(code))
 
 	--- setup the wrapper code
 	local code = '#include <cstdlib>\n#include<cmath>\n#include <iostream>\n#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void ' .. funcname .. '() {\n    using namespace jiss;\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
