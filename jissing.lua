@@ -99,7 +99,7 @@ function cpp_event(code)
 	local funcname = "run".. math.random(1000000)
 
 	--- setup the wrapper code
-	local code = '#include <cstdlib>\n#include<cmath>\n#include <iostream>\n#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void ' .. funcname .. '() {\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
+	local code = '#include <cstdlib>\n#include<cmath>\n#include <iostream>\n#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void ' .. funcname .. '() {\n    using namespace jiss;\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
 	--- print(code)
 
 	--- TODO handle cleanup in some non-retarded way?
