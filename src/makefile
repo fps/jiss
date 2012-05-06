@@ -3,9 +3,8 @@
 
 all: jiss.so
 
-CFLAGS ?= -DJISS_NO_DEBUG -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
-# CFLAGS ?= -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
-CXXFLAGS ?= ${CFLAGS}
+#CXXFLAGS ?= -DJISS_NO_DEBUG -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
+CXXFLAGS ?= -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
 LDFLAGS ?=  -Wl,-rpath=. `pkg-config lua5.1 jack lilv-0 --libs`
 
 jiss.so: luarun.h jiss_wrap.o disposable.o engine.o heap.o main.o sequence.o lv2.o

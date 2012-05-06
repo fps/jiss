@@ -3,6 +3,9 @@
 
 #include <string>
 #include <lilv/lilv.h>
+#include <boost/shared_ptr.hpp>
+#include <vector>
+#include <jack/jack.h>
 
 #include "debug.h"
 
@@ -14,6 +17,8 @@ struct lv2 {
 	LilvInstance *instance;
 
 	lv2(const std::string &uri, engine &e);
+
+	std::vector<jack_port_t*> jack_ports;
 
 	~lv2() {
 		jdbg("~lv2()")
