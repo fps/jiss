@@ -3,7 +3,6 @@
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
-#include <lilv/lilv.h>
 
 #include <map>
 #include <boost/function.hpp>
@@ -69,8 +68,6 @@ struct engine {
 	//! This variable can be used from within cpp_events
 	//! to setup/access global state.
 	boost::shared_ptr<disposable<std::vector<store_base_ptr> > > storage;
-
-	LilvWorld *lilv_world;
 
 
 	engine(const std::string name = "jiss");

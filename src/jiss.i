@@ -9,7 +9,6 @@
 	#include "disposable_base.h"
 	#include "disposable.h"
 	#include "heap.h"
-   #include "lv2.h"
 	#include <boost/shared_ptr.hpp>
 
 	using namespace jiss;

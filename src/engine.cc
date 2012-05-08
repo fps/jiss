@@ -67,9 +67,6 @@ engine::engine(const std::string name) :
 	commands(1024),
 	cmds_pending(0)
 {
-	lilv_world = lilv_world_new();
-	lilv_world_load_all(lilv_world);
-
 	e = this;
 
 	jdbg("engine()")
