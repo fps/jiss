@@ -2,6 +2,8 @@
 
 #include "engine.h"
 
+namespace jiss {
+
 sequence::sequence(engine *e, const std::string &name) : 
 	state(STOPPED),
 	name(name),
@@ -11,10 +13,13 @@ sequence::sequence(engine *e, const std::string &name) :
 	was_relocated(false)
 { 
 	s_bind = "s = " + name;
-	port = jack_port_register(e->client, name.c_str(), JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput | JackPortIsTerminal, 0);
+	if (0 != e) {
+		port = jack_port_register(e->client, name.c_str(), JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput | JackPortIsTerminal, 0);
+	}
 }
 
 sequence::~sequence() {
+	jdbg("~sequence()")
 	jack_port_unregister(e->client, port);
 }
 
@@ -32,15 +37,15 @@ void sequence::start_() {
 
 
 void sequence::start() {
-	e->write_blocking_command(::assign(state, STARTED));
+	e->write_blocking_command(jiss::assign(state, STARTED));
 }
 
 void sequence::stop() {
-	e->write_blocking_command(::assign(state, STOPPED));
+	e->write_blocking_command(jiss::assign(state, STOPPED));
 }
 
 void sequence::exec_cpp_event(cpp_event *c) {
-	c->o->f();
+	e->exec_cpp_event(c);
 }
 
 void sequence::exec_lua_event(lua_event *l) {
@@ -53,3 +58,12 @@ void sequence::bind_sequence_var() {
 	luaL_dostring(e->lua_state, s_bind.c_str());
 }
 
+void sequence::start(jiss_time t) {
+
+}
+
+void sequence::stop(jiss_time t) {
+
+}
+
+} // namespace

@@ -13,7 +13,8 @@ tick = e:get_samplerate()/20
 -- note that this may only be done when the engine is stopped
 e:exec_cpp_event(cpp_event(
 [[
-	e.storage_append<int>(0); // create an int entry in the c+ storage
+		e.storage_append(0);
+		e.storage_append(lv2_ptr(new lv2("http://calf.sourceforge.net/plugins/Monosynth", e))); 
 ]]
 ))
 
@@ -21,7 +22,7 @@ e:exec_cpp_event(cpp_event(
 -- storage index 0 and then plays a midi note..
 play(loop(tick, cpp_seq(e, "rand", lines(1.0, 
 [[
-	int &i = e.storage_at<int>(0); i = (i + 1) % 128; s.midi_note_on(1, i, 127); 
+		int &i = e.storage_at<int>(0); i = (i + 1) % 128; s.midi_note_on(1, i, 127); 
 ]]
 ))))
 
@@ -31,5 +32,3 @@ connect(e,"ardour:MIDI 1/midi_in 1")
 -- start the processing
 e:start()
 
--- wait for the user to press enter
-io.stdin:read'*l'

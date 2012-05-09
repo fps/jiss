@@ -15,6 +15,8 @@
 #include <jack/jack.h>
 #include <jack/midiport.h>
 
+namespace jiss {
+
 struct engine;
 
 typedef std::multimap<jiss_time, event_ptr> events_map;
@@ -86,6 +88,9 @@ struct sequence {
 		events.insert(std::make_pair(t, event_ptr(new lua_event(e)))); 
 	}
 
+	void start(jiss_time t);
+	void stop(jiss_time t);
+
 	void start();
 	void stop();
 
@@ -149,5 +154,7 @@ typedef disposable<sequence> gc_sequence;
 typedef boost::shared_ptr<gc_sequence> gc_sequence_ptr;
 typedef disposable<std::vector<gc_sequence_ptr> > gc_sequence_ptr_vector;
 typedef boost::shared_ptr<gc_sequence_ptr_vector> gc_sequence_ptr_vector_ptr;
+
+} // namespace
 
 #endif

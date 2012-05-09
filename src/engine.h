@@ -28,11 +28,15 @@ extern "C" {
 #include "assign.h"
 #include "types.h"
 #include "store.h"
-
+#include "debug.h"
 
 extern "C" { 
 	int process(jack_nframes_t nframes, void *arg); 
 }
+
+
+namespace jiss {
+
 
 typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
 
@@ -51,30 +55,41 @@ struct engine {
 	//! set by each sequence while it runs
 	jiss_time seq_time_in_buffer;
 
+	jiss_time current_time;
+
 	gc_sequence_ptr_vector_ptr sequences;
 
 	command_ringbuffer commands;
 
 	ringbuffer<char> acks;
 
-	engine();
-
-	~engine() {
-		jack_client_close(client);
-		jack_deactivate(client);
-		lua_close(lua_state);
-	}
+	lua_State *lua_state;
 
 	//! This variable can be used from within cpp_events
 	//! to setup/access global state.
 	boost::shared_ptr<disposable<std::vector<store_base_ptr> > > storage;
 
-	//! access element index of store as T. might raise an exception when the
-	//! cast fails
-	template<class T> 
-	T &storage_at(unsigned int index) {
-		return (boost::dynamic_pointer_cast<store<T> >(storage->t[index]))->t;
+
+	engine(const std::string name = "jiss");
+
+	~engine() {
+		jdbg("~engine()")
+
+		clear();
+
+		heap::get()->cleanup();
+
+		delete default_sequence;
+
+		jdbg("we're clear")
+
+		jack_client_close(client);
+		jack_deactivate(client);
+		lua_close(lua_state);
 	}
+
+
+
 
 	template<class T>
 	void storage_assign(unsigned int index, const T &t) {
@@ -86,15 +101,30 @@ struct engine {
 		storage->t.push_back(store_base_ptr(new store<T>(t)));
 	}
 
-	lua_State *lua_state;
+
+	//! Do not call these functions from outside the process
+	//! callback
+
+	//! access element index of store as T. might raise an exception when the
+	//! cast fails
+	template<class T> 
+	T &storage_at(unsigned int index) {
+		return (boost::dynamic_pointer_cast<store<T> >(storage->t[index]))->t;
+	}
 
 	//! Run a lua script in the engine global context
 	void run(const std::string &code);
 
-	void exec_lua_event(lua_event *l) { run(l->code); }
+	void exec_lua(lua_State *state, const std::string &code);
+
+	void exec_lua_event(lua_event *l) { run(l->code); };
 
 	void exec_cpp_event(cpp_event *l) {
-		l->o->f();
+		try {
+			l->o->f();
+		} catch (...) {
+			jdbg("some exception occured")
+		}
 	}
 
 	//! Set to this in process(). This is only useful from within compiled cpp functions..
@@ -106,13 +136,15 @@ struct engine {
 	}
 
 	//! Will return the currently processing sequence
+	sequence *default_sequence;
 	sequence *s;
 	sequence *current_sequence() {
 		return s;
 	}
 
 	void clear() {
-		write_blocking_command(boost::bind(&engine::clear, this));
+		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create();
+		write_blocking_command(jiss::assign(sequences, p));
 	}
 
 	unsigned int num_sequences() {
@@ -145,6 +177,26 @@ struct engine {
 
 	void register_sequence(const sequence &s);
 
+	int process(jack_nframes_t nframes, void *arg);
+
+	void start_() {
+		//std::cout << "start" << std::endl;
+		state = STARTED;
+	}
+
+	void stop_() {
+		//std::cout << "stop" << std::endl;
+		state = STOPPED;
+	}
+
+	jiss_time get_samplerate() {
+		return jack_get_sample_rate(client);
+	}
+
+
+	//! These functions are safe to be executed not in the process
+	//! callback
+
 	//! Assign a new sequence to existing sequence at index
 	void assign(unsigned int index, sequence &s) {
 		//! copy existing sequences into a new vector
@@ -156,7 +208,7 @@ struct engine {
 		//! commit to process thread
 		register_sequence(p->t[index]->t);
 
-		write_blocking_command(::assign(sequences, p));
+		write_blocking_command(jiss::assign(sequences, p));
 	}
 
 	//! Append sequence to the vector of sequences
@@ -167,47 +219,32 @@ struct engine {
 		// std::cout << "seqsize: " << s2->t.events.size() << " "  << s2->t.state << std::endl;
 		p->t.push_back(s2);
 		register_sequence(s2->t);
-		write_blocking_command(::assign(sequences, p));
+		write_blocking_command(jiss::assign(sequences, p));
 	}
 
 	void remove(const int index) {
 		gc_sequence_ptr_vector_ptr p = gc_sequence_ptr_vector::create(sequences->t);
 		p->t.erase(p->t.begin() + index);
-		write_blocking_command(::assign(sequences, p));
+		write_blocking_command(jiss::assign(sequences, p));
 	}
 
-	int process(jack_nframes_t nframes, void *arg);
 
-	//! never call in process
 	void start() {
 		//! turn GC off before entering STARTED state
 		// lua_gc(lua_state, LUA_GCSTOP, 0);
 		write_blocking_command(boost::bind(&engine::start_, this));
 	}
 
-	//! never call in process
 	void stop() {
 		write_blocking_command(boost::bind(&engine::stop_, this));
 		// lua_gc(lua_state, LUA_GCRESTART, 0);
 		//! run GC after stopping :D
 	}
 
-	//! Call only from process thread
-	void start_() {
-		//std::cout << "start" << std::endl;
-		state = STARTED;
-	}
 
-	//! Call only from process thread
-	void stop_() {
-		//std::cout << "stop" << std::endl;
-		state = STOPPED;
-	}
-
-	jack_nframes_t get_samplerate() {
-		return jack_get_sample_rate(client);
-	}
 };
+
+} // namespace
 
 #endif
 

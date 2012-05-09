@@ -6,6 +6,8 @@
 
 #include "disposable_base.h"
 
+namespace jiss {
+
 struct heap {
 	std::list<boost::shared_ptr<disposable_base> > disposables;
 
@@ -43,5 +45,6 @@ struct heap {
 		heap() { }
 };
 
+} // namespace
 
 #endif

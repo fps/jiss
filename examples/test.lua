@@ -1,9 +1,15 @@
 require "jissing"
+
+print("creating engine")
 e = jiss.engine()
 
-e:run("notes = range(20, 80, maj7s11(C(4)))")
+print("running some stuff")
+e:run("print('hi');notes = range(20, 80, maj7s11(C(4)))")
 
+print("samplerate: " .. e:get_samplerate())
 tick = e:get_samplerate()/8
+
+print("creating sequences")
 
 seq = jiss.sequence(e, "s1")
 seq:connect("ardour:MIDI 1/midi_in 1")

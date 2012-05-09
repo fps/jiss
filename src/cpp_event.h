@@ -2,10 +2,13 @@
 #define JISS_CPP_EVENT_HH
 
 #include "event.h"
+#include "debug.h"
 
 #include <string>
 #include <dlfcn.h>
 #include <boost/shared_ptr.hpp>
+
+namespace jiss {
 
 typedef void(*cpp_func)();
 
@@ -22,15 +25,17 @@ struct cpp_object  {
 	void *fd;
 
 	cpp_object(const std::string sofile, const std::string func_name) {
+		jdbg("cpp_object()")
 		// std::cout << sofile << " : " << func_name << std::endl;
-		fd = dlopen(sofile.c_str(), RTLD_NOW);
-		if (fd == 0) std::cout << "dlopen failed: " << dlerror() << std::endl;
+		fd = dlopen(sofile.c_str(), RTLD_NOW | RTLD_LOCAL);
+		if (fd == 0) jdbg("dlopen failed: " << dlerror());
 
 		f = (cpp_func) ((void*)dlsym(fd, func_name.c_str()));
-		if (f == 0) std::cout << "dlsym failed: " << dlerror() << std::endl;
+		if (f == 0) jdbg("dlsym failed: " << dlerror())
 	}
 
 	~cpp_object() {
+		jdbg("~cpp_object")
 		dlclose(fd);
 	}
 
@@ -43,8 +48,10 @@ struct cpp_event : public event {
 	cpp_event(const std::string sofile, const std::string func_name) :
 		o(new cpp_object(sofile, func_name))
 	{
-
+		jdbg("cpp_event()")
 	}
 };
+
+} // namespace
 
 #endif

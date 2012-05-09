@@ -1,8 +1,9 @@
 require "jiss"
+require "md5"
 
 local get_sequence = 
 function (table, key) 
-	-- return current sequence when key s is requested
+	--- return current sequence when key s is requested
 	if "s" == key then
 		return e:current_sequence()
 	end
@@ -11,10 +12,14 @@ end
 
 setmetatable(_G, { __index = get_sequence })
 
--- require "LibCompress/LibCompress"
+--- require "LibCompress/LibCompress"
 
--- create a named sequence from a table of string events {{t1, e1}, {t2, e2}, ... }
--- which represent lua code
+---- <p> create a named sequence from a table of string events <code> {{t1, e1}, {t2, e2}, ... } </code>
+--- which represent lua code. </p>
+--- <p>Example:<p/>
+--- <p>local tick = e:get_samplerate/4;</p> 
+--- local seq1 = lua_seq(e, "seq1", {{0, note_on(0,0,0)}, {tick, note_on(0,0,0)})) </code>
+--- @return a lua sequence
 function lua_seq(e, name, events)
 	local s = jiss.sequence(e, name)
 	for i = 1,#events do
@@ -23,8 +28,8 @@ function lua_seq(e, name, events)
 	return s
 end
 
--- create a named sequence from a table of string events {{t1, e1}, {t2, e2}, ... }
--- which represent cpp code 
+--- create a named sequence from a table of string events {{t1, e1}, {t2, e2}, ... }
+--- which represent cpp code 
 function cpp_seq(e, name, events)
 	local s = jiss.sequence(e, name)
 	for i = 1,#events do
@@ -34,29 +39,29 @@ function cpp_seq(e, name, events)
 end
 
 
--- convenience function to add a sequence to the engine and toggle its
--- state to STARTED
+--- convenience function to add a sequence to the engine and toggle its
+--- state to STARTED
 function play(s)
 	s:start()
 	s.e:append(s)
 	return s
 end
 
--- add a lua event to sequence table s to relocate to 0 at a certain time t
+--- add a lua event to sequence table s to relocate to 0 at a certain time t
 function loop(time, s)
 	local seq = s
 	seq:insert(time, jiss.lua_event([[s:relocate(0)]]))
 	return seq
 end
 
--- expects a string s containing n lines where each line represents
--- code for an event. returns an event table with each
--- event being time t apart
+--- expects a string s containing n lines where each line represents
+--- code for an event. returns an event table with each
+--- event being time t apart
 function lines(t, s)
 	local time = 0
 	local ret = {}
 	for line in s:gmatch("[^\n]*\n") do
-		-- print("line: " .. line)
+		--- print("line: " .. line)
 		table.insert(ret, {time, line})
 		time = time + t
 	end
@@ -65,22 +70,22 @@ end
 
 
 
--- merge two sequence tables
+--- merge two sequence tables
 function merge_sequences(s1, s2)
 	
 end
 
--- connect all sequences' output to the given port
+--- connect all sequences' output to the given port
 function connect(e, port)
 	for i = 0, (e:num_sequences()-1) do
 		e:at(i):connect(port)
 	end
 end
 
--- create a event table with evenly spaced times and the given events
+--- create a event table with evenly spaced times and the given events
 
 
--- create a sequence
+--- create a sequence
 function midi_sequence(e, name, time, notes)
 	local s = jiss.sequence(e, name)
 	for i = 1,#notes do
@@ -90,33 +95,66 @@ function midi_sequence(e, name, time, notes)
 end
 
 function cpp_event(code)
-	print ("compiling cpp code: \n" .. code)
-	-- TODO generate UNIQUE name
-	local funcname = "run".. math.random(1000000)
+	--- TODO generate UNIQUE name
+	local funchash = md5.sumhexa(code)
+	local funcname = "run" .. funchash
 
-	-- setup the wrapper code
-	local code = '#include <cstdlib>\n#include<cmath>\n#include <iostream>\n#include "engine.h"\n#include "sequence.h"\n\nextern "C" {\n  void ' .. funcname .. '() {\n    engine &e = *(engine::get());\n    sequence &s = *(e.current_sequence());\n    ' .. code .. '\n  }\n}\n'
-	-- print(code)
+	--- setup the wrapper code
+	local code = 
+[[
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include "engine.h"
+#include "sequence.h"
+#include "lv2.h"
+			
+extern "C" {
+  void ]] .. funcname .. [[ () {
+  using namespace jiss;
 
-	-- TODO handle cleanup in some non-retarded way?
-	local filename = os.tmpname()
-	io.output(filename .. ".cc")
-	io.write(code)
-	io.flush()
+  engine &e = *(engine::get());
+  sequence &s = *(e.current_sequence());
+]]	.. code .. [[
+  }
+}
+]]
+	-- just a comment :D
 
-	-- compile the assembled function into object file
-	-- TODO: fix up all the things to make this more convenient
-	os.execute("g++ -g -fPIC -I. -I /opt/local/include -I /usr/local/include -I/usr/include/lua5.1 -o " .. filename .. ".so -shared " .. filename .. ".cc -Wl,-rpath=. jiss.so")
-
-	local c =  jiss.cpp_event(filename .. ".so", funcname)
+	sohash = md5.sumhexa(code)
 	
-	os.execute("rm " .. filename .. ".cc")
-	os.execute("rm " .. filename .. ".so")
-	return c
+	--- TODO handle cleanup in some non-retarded way?
+
+	local filename_base = "/tmp/jiss_" .. sohash 
+
+	if nil == io.open(filename_base .. ".so") then
+		print ("compiling cpp code: \n----- \n" .. code .. "\n----")
+
+		io.output(filename_base .. ".cc")
+		io.write(code)
+		io.flush()
+
+		--- compile the assembled function into object file
+		--- TODO: fix up all the things to make this more convenient
+		os.execute("g++ -g -fPIC -I. `pkg-config lua5.1 jack lilv-0 --cflags` -o " .. filename_base .. ".so -shared " .. filename_base .. ".cc -Wl,-rpath=. jiss.so")
+
+		os.execute("rm " .. filename_base .. ".cc")
+	end
+
+	-- print("cpp_event: " .. filename_base .. ".so  " .. funcname)
+	if nil ~= io.open(filename_base .. ".so") then 
+		local c =  jiss.cpp_event(filename_base .. ".so", funcname)
+
+		-- os.execute("rm " .. filename_base .. ".so")
+		return c
+	else
+		print("compilation failed")
+		return nil
+	end
 end
 
 
--- note names
+--- note names
 function C(octave) return 12 * octave end
 function D(octave) return 12 * octave + 2 end
 function E(octave) return 12 * octave + 4 end
@@ -125,7 +163,7 @@ function G(octave) return 12 * octave + 7 end
 function A(octave) return 12 * octave + 9 end
 function B(octave) return 12 * octave + 11 end
 
--- tone collection
+--- tone collection
 function maj7(root) return { root, root + 4, root + 7, root + 11 } end
 function maj79(root) return { root, root + 4, root + 7, root + 11, root + 14 } end
 function maj7s11(root) return { root, root + 4, root + 7, root + 11, root + 14, root + 18 } end
@@ -137,7 +175,7 @@ function min7b5(root) return { root, root + 3, root + 6, root + 10 } end
 function harmonic_minor(root) return { root, root + 2, root + 3, root + 5, root + 7, root + 8, root + 11} end
 
 
--- return an array of notes filled from the scale between min and max
+--- return an array of notes filled from the scale between min and max
 function range(min, max, scale)
 	local c = 1
 	local ret = {};
@@ -153,12 +191,12 @@ function range(min, max, scale)
 end
 
 
--- output a note on message from within a lua_event
+--- output a note on message from within a lua_event
 function note_on(channel, note, velocity)
 	s:midi_note_on(channel, note, velocity)
 end
 
--- output a midi cc message from within a lua_event
+--- output a midi cc message from within a lua_event
 function cc(channel, ctrl, val)
 	s:midi_cc(channel, ctrl, val)
 end
@@ -169,7 +207,7 @@ xs =
 		for line in p:gmatch("[^\r\n]+") do
 			for i = 1, #line do
 				if line:sub(i,i) ~= " " then
-					-- print(f(line:sub(i,i), y))
+					--- print(f(line:sub(i,i), y))
 					table.insert(ret, {(i-1)*tick, f(line:sub(i,i), y)})
 				end
 			end

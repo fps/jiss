@@ -10,7 +10,7 @@
 
 
 int main() {
-	engine e;
+	jiss::engine e;
 
 	sleep(15);
 }

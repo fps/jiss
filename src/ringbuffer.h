@@ -4,6 +4,8 @@
 #include <jack/ringbuffer.h>
 #include <memory>
 
+namespace jiss {
+
 /**
 	T needs to be a default constructable type.. And it has to have valid
 	copy constructor/assignment operator
@@ -71,5 +73,7 @@ struct ringbuffer {
 		return *((T*)rb_data->buf);
 	}
 };
+
+} // namespace
 
 #endif

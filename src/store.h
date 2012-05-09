@@ -1,6 +1,8 @@
 #ifndef JISS_STORE_HH
 #define JISS_STORE_HH
 
+namespace jiss {
+
 //! The base type for all objects to be stored in the engine::store vector
 struct store_base {
 	virtual ~store_base() { }	
@@ -13,5 +15,7 @@ struct store : public store_base {
 	store(const T &t = T()) : t(t) { }
 	T t;
 };
+
+} // namespace
 
 #endif

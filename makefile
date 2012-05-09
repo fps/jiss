@@ -1,6 +1,14 @@
-.PHONY: jiss.so
+.PHONY: all install clean doc
 
-jiss.so:
-	swig -c++ -lua -external-runtime luarun.h
-	swig -c++ -lua jiss.i
-	g++ -O3 -rdynamic -Wall -shared -fPIC -I /opt/local/include -I /usr/include/lua5.1 -o jiss.so *.cc *.cxx -L /opt/local/lib -L /usr/local/lib -llua5.1 -ljack 
+all:
+	make -C src
+
+install:
+	make -C src install
+
+clean:
+	make -C src clean
+
+doc:
+	make -C src doc
+
