@@ -4,6 +4,9 @@
 #include "disposable.h"
 
 struct event {
+	bool deferred;
+
+	event(bool deferred = false) : deferred(deferred) { }
 	virtual ~event() { }
 };
 
