@@ -54,6 +54,7 @@ int engine::process(jack_nframes_t frames, void *arg) {
 	for (unsigned int frame = 0; frame < nframes; ++frame) {
 		for (unsigned int index = 0; index < sequences->t.size(); ++index) {
 			s = &sequences->t[index]->t;
+			s->current_frame_in_buffer = frame;
 			sequences->t[index]->t.process();
 		}
 	} 
