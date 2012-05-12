@@ -47,6 +47,26 @@ typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
 	You can call clear() from the non-RT context and it will post the command to the engine..
 */
 struct engine {
+	engine(const std::string name = "jiss");
+
+	~engine() {
+		jdbg("~engine()")
+
+		clear();
+
+		heap::get()->cleanup();
+
+		delete default_sequence;
+
+		jdbg("we're clear")
+
+		jack_client_close(client);
+		jack_deactivate(client);
+		lua_close(lua_state);
+	}
+
+	
+
 	enum {STOPPED, STARTED} state;
 
 	jack_client_t *client;
@@ -70,28 +90,6 @@ struct engine {
 	//! to setup/access global state.
 	boost::shared_ptr<disposable<std::vector<store_base_ptr> > > storage;
 
-
-	engine(const std::string name = "jiss");
-
-	~engine() {
-		jdbg("~engine()")
-
-		clear();
-
-		heap::get()->cleanup();
-
-		delete default_sequence;
-
-		jdbg("we're clear")
-
-		jack_client_close(client);
-		jack_deactivate(client);
-		lua_close(lua_state);
-	}
-
-
-
-
 	template<class T>
 	void storage_assign(unsigned int index, const T &t) {
 		storage->t[index] = store_base_ptr(store<T>(t));
@@ -99,7 +97,13 @@ struct engine {
 
 	template<class T>
 	void storage_append(const T &t) {
-		storage->t.push_back(store_base_ptr(new store<T>(t)));
+		jdbg("appending to storage")
+		boost::shared_ptr<disposable<std::vector<store_base_ptr> > > 
+			new_storage(disposable<std::vector<store_base_ptr> >::create(storage->t));
+
+		new_storage->t.push_back(store_base_ptr(new store<T>(t)));
+		write_blocking_command(jiss::assign(storage, new_storage));
+		jdbg("done")
 	}
 
 

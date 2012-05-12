@@ -4,7 +4,7 @@
 all: jiss.so
 
 #CXXFLAGS ?= -DJISS_NO_DEBUG -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
-CXXFLAGS ?= -O2 -g -Wall -fPIC `pkg-config lua5.1 jack --cflags`
+CXXFLAGS ?= -O2 -g -Wall -fPIC `pkg-config lua5.1 jack --cflags` -export-dynamic
 LDFLAGS ?=  -Wl,-rpath=. `pkg-config lua5.1 jack --libs` -lingen_server
 
 jiss.so: luarun.h jiss_wrap.o disposable.o engine.o heap.o main.o sequence.o 
