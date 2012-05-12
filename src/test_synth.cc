@@ -3,15 +3,15 @@
 using namespace jiss;
 
 int main() {
-	synth_base *s = new
-	synth<
-		2,
-		sin<
-			_1, 
-			_2, 
-			in<2> 
-		> 
-	>;
-	(*s)();
+	synth_ptr s = 
+		synth(
+			_2, _3, _1,
+			sin(
+				in(_0),
+				in(_1),
+				in(_2)
+			)
+		);
 
+	(*s)();
 }

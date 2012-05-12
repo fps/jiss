@@ -1,4 +1,3 @@
-require "jiss"
 require "jissing"
 
 -- like with all self contained jiss scripts we start by creating the engine
