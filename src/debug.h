@@ -36,6 +36,7 @@ inline std::string gcc_unmangle(const char *typen) {
 
 #ifdef JISS_NO_DEBUG
 #define jdbg(x) { }
+#define jdbgc(x) { }
 #endif
 
 #endif
