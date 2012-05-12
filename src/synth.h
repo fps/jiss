@@ -18,16 +18,22 @@ typedef float float_num;
 typedef unsigned int uint_num;
 typedef int int_num;
 
+
+
+
+
+
+
 template<int number>
 struct n {
 	const uint_num _n;
 
 	n() : _n(number) { 
-		jdbgc("constructing")
+		//jdbgc("constructing")
 	}
 
 	~n() {
-		jdbgc("destroying")
+		//jdbgc("destroying")
 	}
 };
 
@@ -36,15 +42,25 @@ n<1> _1;
 n<2> _2;
 n<3> _3;
 
+
+
+
+
 struct outs {
 	vector<vector<float_num> > outs;
 	virtual ~outs() { }
 };
 
+
+
+
+
+
+
 template<class nchannels>
 struct op_nchannels : outs {
 	op_nchannels() { 
-		jdbgc("constructing ")
+		//jdbgc("constructing ")
 	}
 
 	nchannels n;
@@ -65,8 +81,15 @@ struct op_nchannels : outs {
 
 	virtual void operator()(vector<float_num> &variables) = 0;
 
-	virtual ~op_nchannels() { jdbgc("~op_nchannels() ") }
+	virtual ~op_nchannels() { 
+		// jdbgc("~op_nchannels() ") 
+	}
 };
+
+
+
+
+
 
 template<class nchannels>
 struct in_op : op_nchannels<nchannels> {
@@ -84,6 +107,12 @@ template<class nchannels>
 in_op<nchannels> in(nchannels n) {
 	return in_op<nchannels>();
 }
+
+
+
+
+
+
 
 //unary_op(minus, { return -u; })
 
@@ -123,6 +152,12 @@ struct minus_op : unary<U, minus1, nchannels> {
 */
 
 
+
+
+
+
+
+
 template<class Freq, class Phase>
 struct sin_op : op_nchannels<n<1> >{
 	Freq u1; Phase u2; 
@@ -137,15 +172,21 @@ struct sin_op : op_nchannels<n<1> >{
 	}
 
 	void operator()(vector<float_num> &vars) {
+		jdbgc("operator()")
+
 		u1(vars);
 		u2(vars);
 
 		for (uint_num n = 0; n < nframes; ++n) {
-			outs[0][n] = sin((n / samplerate) + u2.outs[0][n]);
+			outs[0][n] = ::sin(phase + u1.outs[0][n] * ((float_num)n / samplerate) + u2.outs[0][n]);
 		}
+		phase = fmod(phase + nframes/samplerate, nframes/samplerate);
+		jdbgc("phase: " << phase)
 	}
 
 	virtual void init(uint_num nframes, float_num samplerate) {
+		op_nchannels::init(nframes, samplerate);
+
 		u1.init(nframes, samplerate);
 		u2.init(nframes, samplerate);
 	}
@@ -155,6 +196,126 @@ template<class Freq, class Phase>
 sin_op<Freq, Phase> sin(Freq u1, Phase u2) {
 	return sin_op<Freq, Phase>(u1, u2);
 }
+
+
+
+
+
+
+
+
+
+struct _const : op_nchannels<n<1> > {
+	_const(float_num t) : t(t) { 
+		jdbgc("constructing")
+	}
+
+	const float_num t;
+
+	virtual void init(uint_num nframes, float_num samplerate) {
+		jdbgc("init()")
+		op_nchannels::init(nframes, samplerate);
+
+		std::fill(outs[0].begin(), outs[0].end(), t);
+	}
+
+	virtual void operator()(vector<float_num> &variables) {
+		jdbgc("operator()")
+	}
+};
+
+
+
+
+
+
+
+
+
+
+
+template<class U1, class U2>
+struct mul_op : op_nchannels<n<1> > {
+	U1 u1;
+	U2 u2;
+
+	mul_op(U1 u1, U2 u2) : u1(u1), u2(u2) {
+		jdbgc("constructing ")
+	}
+
+	virtual void operator()(vector<float_num> &variables) {
+		jdbgc("operator()")
+		u1(variables);
+		u2(variables);
+
+		std::transform(
+			u1.outs[0].begin(), u1.outs[0].end(), 
+			u2.outs[0].begin(), 
+			outs[0].begin(), 
+			std::multiplies<float_num>()
+		);
+
+	}
+
+	virtual void init(uint_num nframes, float_num samplerate) {
+		jdbgc("init() ")
+		op_nchannels::init(nframes, samplerate);
+
+		u1.init(nframes, samplerate);
+		u2.init(nframes, samplerate);
+	}
+};
+
+template<class U1, class U2>
+mul_op<U1, U2> operator*(U1 u1, U2 u2) {
+	return mul_op<U1, U2>(u1, u2);
+}
+
+
+
+
+
+
+
+
+
+template<class U1, class U2>
+struct add_op : op_nchannels<n<1> > {
+	U1 u1;
+	U2 u2;
+
+	add_op(U1 u1, U2 u2) : u1(u1), u2(u2) {
+		jdbgc("constructing ")
+	}
+
+	virtual void operator()(vector<float_num> &variables) {
+		u1(variables);
+		u2(variables);
+
+		std::transform(
+			u1.outs[0].begin(), u1.outs[0].end(), 
+			u2.outs[0].begin(), 
+			outs[0].begin(), 
+			std::plus<float_num>()
+		);
+	}
+
+	virtual void init(uint_num nframes, float_num samplerate) {
+		jdbgc("init() ")
+		op_nchannels::init(nframes, samplerate);
+		u1.init(nframes, samplerate);
+		u2.init(nframes, samplerate);
+	}
+};
+
+template<class U1, class U2>
+add_op<U1, U2> operator+(U1 u1, U2 u2) {
+	return add_op<U1, U2>(u1, u2);
+}
+
+
+
+
 
 
 struct synth_base {
@@ -201,7 +362,10 @@ struct synth_op : synth_base {
 	}
 
 	virtual void operator()() {
+		jdbgc("operator()")
+
 		u(variables);
+
 		for (uint_num channel = 0; channel < outs.size(); ++channel) {
 			for (uint_num frame = 0; frame < outs[channel].size(); ++frame) {
 				outs[channel][frame] = u.outs[channel][frame];
@@ -223,79 +387,6 @@ synth_ptr synth(uint_num nframes, float_num samplerate, nvariables n, inchannels
 	synth_ptr p(new synth_op<nvariables, inchannels, outchannels, U>(n, n_in, n_out, u));
 	p->init(nframes, samplerate);
 	return p;
-}
-
-struct _const : op_nchannels<n<1> > {
-	_const(float_num t) : t(t) { 
-		jdbgc("constructing")
-	}
-
-	const float_num t;
-
-	virtual void init(uint_num nframes, float_num samplerate) {
-		jdbgc("init()")
-		op_nchannels::init(nframes, samplerate);
-
-		std::fill(outs[0].begin(), outs[0].end(), t);
-	}
-
-	virtual void operator()(vector<float_num> &variables) {
-		
-	}
-};
-
-
-
-template<class U1, class U2>
-struct mul_op : op_nchannels<n<1> > {
-	U1 u1;
-	U2 u2;
-
-	mul_op(U1 u1, U2 u2) : u1(u1), u2(u2) {
-		jdbgc("constructing ")
-	}
-
-	virtual void operator()(vector<float_num> &variables) {
-		
-	}
-
-	virtual void init(uint_num nframes, float_num samplerate) {
-		jdbgc("init() ")
-
-		u1.init(nframes, samplerate);
-		u2.init(nframes, samplerate);
-	}
-};
-
-template<class U1, class U2>
-mul_op<U1, U2> operator*(U1 u1, U2 u2) {
-	return mul_op<U1, U2>(u1, u2);
-}
-
-template<class U1, class U2>
-struct add_op : op_nchannels<n<1> > {
-	U1 u1;
-	U2 u2;
-
-	add_op(U1 u1, U2 u2) : u1(u1), u2(u2) {
-		jdbgc("constructing ")
-	}
-
-	virtual void operator()(vector<float_num> &variables) {
-		
-	}
-
-	virtual void init(uint_num nframes, float_num samplerate) {
-		jdbgc("init() ")
-		op_nchannels::init(nframes, samplerate);
-		u1.init(nframes, samplerate);
-		u2.init(nframes, samplerate);
-	}
-};
-
-template<class U1, class U2>
-add_op<U1, U2> operator+(U1 u1, U2 u2) {
-	return add_op<U1, U2>(u1, u2);
 }
 
 
