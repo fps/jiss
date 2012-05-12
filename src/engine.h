@@ -29,6 +29,7 @@ extern "C" {
 #include "types.h"
 #include "store.h"
 #include "debug.h"
+#include "synth.h"
 
 extern "C" { 
 	int process(jack_nframes_t nframes, void *arg); 
