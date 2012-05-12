@@ -12,7 +12,7 @@ p1 = [[
 x   x   x x   x   x   x x   
 ]]
 
-tick = e:get_samplerate()/16
+tick = e:get_samplerate()/12
 
 play(
 	loop(
@@ -24,7 +24,7 @@ play(
 							  switch(i) { 
 								  case 1: s.midi_note_on(0, 64, 127); break;
 								  case 2: s.midi_note_on(2, 64, 60); break;
-								  case 3: s.midi_note_on(5, 64, 50); break;
+								  case 3: s.midi_note_on(9, 64, 80); break;
 								  
 								  default: s.midi_note_on(0, 64, 127); 
 							  }
