@@ -6,7 +6,7 @@ int main() {
 
 	synth_ptr s = 
 		synth(
-			2048, 48000.0, _0, _0, _1,
+			1000, 10000.0, _0, _0, _1,
 			sin(_const(440.0), _const(M_PI)) * sin(_const(444.0), _const(M_PI))
 		);
 
@@ -17,9 +17,10 @@ int main() {
 		);
 
 
-	(*s)();
+
 	(*s2)();
 
+	(*s)();
 	for (int i = 0; i < 1000; ++i) {
 
 		std::cout << s->outs[0][i] << std::endl;

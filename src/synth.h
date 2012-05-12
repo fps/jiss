@@ -178,9 +178,10 @@ struct sin_op : op_nchannels<n<1> >{
 		u2(vars);
 
 		for (uint_num n = 0; n < nframes; ++n) {
-			outs[0][n] = ::sin(phase + u1.outs[0][n] * ((float_num)n / samplerate) + u2.outs[0][n]);
+			outs[0][n] = ::sin(phase + u2.outs[0][n]);
+			phase += u1.outs[0][n] / samplerate;
 		}
-		phase = fmod(phase + nframes/samplerate, nframes/samplerate);
+
 		jdbgc("phase: " << phase)
 	}
 
