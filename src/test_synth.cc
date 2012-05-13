@@ -1,6 +1,6 @@
 #include "synth.h"
 
-using namespace jiss;
+using namespace jissing;
 
 int main() {
 

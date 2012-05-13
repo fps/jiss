@@ -6,7 +6,6 @@
 #include <functional>
 #include <cmath>
 
-#include "engine.h"
 #include "debug.h"
 
 #include <boost/shared_ptr.hpp>
