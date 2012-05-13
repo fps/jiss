@@ -29,7 +29,7 @@ extern "C" {
 #include "types.h"
 #include "store.h"
 #include "debug.h"
-#include "synth.h"
+// #include "synth.h"
 
 extern "C" { 
 	int process(jack_nframes_t nframes, void *arg); 
@@ -196,6 +196,10 @@ struct engine {
 
 	jiss_time get_samplerate() {
 		return jack_get_sample_rate(client);
+	}
+
+	jiss_time get_buffersize() {
+		return jack_get_buffer_size(client);
 	}
 
 

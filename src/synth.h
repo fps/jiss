@@ -6,11 +6,13 @@
 #include <functional>
 #include <cmath>
 
+#include "engine.h"
 #include "debug.h"
 
 #include <boost/shared_ptr.hpp>
+#include <jack/jack.h>
 
-namespace jiss {
+namespace jissing {
 
 using std::vector;
 
@@ -325,6 +327,8 @@ struct synth_base {
 	vector<vector<float_num> > ins;
 	vector<vector<float_num> > outs;
 
+	vector<jack_port_t*> out_ports;
+
 	synth_base(uint_num nvars, uint_num nins, uint_num nouts) 
 	:
 		variables(nvars),
@@ -384,7 +388,14 @@ struct synth_op : synth_base {
 typedef boost::shared_ptr<synth_base> synth_ptr;
 
 template<class nvariables, class inchannels, class outchannels, class U>
-synth_ptr synth(uint_num nframes, float_num samplerate, nvariables n, inchannels n_in, outchannels n_out, U u) {
+synth_ptr synth(
+	uint_num nframes, 
+	float_num samplerate, 
+	nvariables n, 
+	inchannels n_in, 
+	outchannels n_out, 
+	U u
+) {
 	synth_ptr p(new synth_op<nvariables, inchannels, outchannels, U>(n, n_in, n_out, u));
 	p->init(nframes, samplerate);
 	return p;
