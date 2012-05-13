@@ -53,7 +53,7 @@ end
 --- add a lua event to sequence table s to relocate to 0 at a certain time t
 function loop(time, s)
 	local seq = s
-	seq:insert(time, jiss.lua_event([[s:relocate(0)]]))
+	seq:insert_cpp_event(time, cpp_event("", [[s.relocate(0);]]))
 	return seq
 end
 

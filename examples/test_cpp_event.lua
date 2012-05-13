@@ -14,7 +14,6 @@ using namespace jissing;
 
 -- e:exec_cpp_event executes the event in non-RT context, so
 -- one can allocate stuff there, etc..
--- note that this may only be done when the engine is stopped
 e:exec_cpp_event(cpp_event(pre,
 [[
   e.storage_append<int>(0); // create an int entry in the c+ storage
