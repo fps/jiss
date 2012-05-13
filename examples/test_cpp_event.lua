@@ -5,7 +5,7 @@ e = jiss.engine()
 
 -- os.execute("sleep 2")
 
-tick = e:get_samplerate()/20
+tick = e:get_samplerate()/24
 
 pre = [[
 #include "jissing.h"
@@ -19,7 +19,7 @@ e:exec_cpp_event(cpp_event(pre,
   e.storage_append<int>(0); // create an int entry in the c+ storage
   e.storage_append(
     synth(e.get_samplerate(), (float)e.get_buffersize(), 
-    n<0>(), n<0>(), n<1>(), 
+    _0, _0, _1,
     sin(_const(440), _const(0.0))));
 ]]
 ))
