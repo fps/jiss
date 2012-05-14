@@ -4,7 +4,7 @@
 all: jiss.so
 
 #CXXFLAGS ?= -DJISS_NO_DEBUG -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
-CXXFLAGS ?= -O2 -g -Wall -fPIC `pkg-config lua5.1 jack --cflags`
+CXXFLAGS ?=  -g -Wall -fPIC `pkg-config lua5.1 jack --cflags` -export-dynamic
 LDFLAGS ?=  -Wl,-rpath=. `pkg-config lua5.1 jack --libs` -lingen_server
 
 jiss.so: luarun.h jiss_wrap.o disposable.o engine.o heap.o main.o sequence.o 
@@ -29,8 +29,16 @@ clean:
 	rm -rf *.o *.so jiss_wrap.cc luarun.h
 
 
+
+
 INSTALL = install
 install: all
 	$(INSTALL) -d `pkg-config --variable=INSTALL_CMOD lua5.1`
 	$(INSTALL) jiss.so `pkg-config --variable=INSTALL_CMOD lua5.1`
 	$(INSTALL) jissing.lua `pkg-config --variable=INSTALL_LMOD lua5.1`
+
+
+.PHONY: uninstall
+uninstall:
+	rm `pkg-config --variable=INSTALL_CMOD lua5.1`/jiss.so
+	rm `pkg-config --variable=INSTALL_LMOD lua5.1`/jissing.lua

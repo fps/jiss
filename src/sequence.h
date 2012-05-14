@@ -37,7 +37,6 @@ struct sequence {
 	events_map events;
 
 	jiss_time current_time_in_sequence;
-	jiss_time current_time_in_buffer;
 	jack_nframes_t current_frame_in_buffer;
 
 	//! The name of the lua variable to which this sequence should be bound

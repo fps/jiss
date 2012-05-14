@@ -30,11 +30,14 @@ end
 
 --- create a named sequence from a table of string events {{t1, e1}, {t2, e2}, ... }
 --- which represent cpp code 
-function cpp_seq(e, name, events)
+function cpp_seq(e, name, preamble, events)
 	local s = jiss.sequence(e, name)
 	for i = 1,#events do
-		s:insert_cpp_event(events[i][1], cpp_event(events[i][2]))
+		e = cpp_event(preamble, events[i][2])
+		if nil ~= e then
+			s:insert_cpp_event(events[i][1], cpp_event(preamble, events[i][2]))
 		end
+	end
 	return s
 end
 
@@ -50,7 +53,7 @@ end
 --- add a lua event to sequence table s to relocate to 0 at a certain time t
 function loop(time, s)
 	local seq = s
-	seq:insert(time, jiss.lua_event([[s:relocate(0)]]))
+	seq:insert_cpp_event(time, cpp_event("", [[s.relocate(0);]]))
 	return seq
 end
 
@@ -94,7 +97,7 @@ function midi_sequence(e, name, time, notes)
 	return s
 end
 
-function cpp_event(code)
+function cpp_event(preamble, code)
 	--- TODO generate UNIQUE name
 	local funchash = md5.sumhexa(code)
 	local funcname = "run" .. funchash
@@ -108,6 +111,8 @@ function cpp_event(code)
 #include "engine.h"
 #include "sequence.h"
 #include "lv2.h"
+
+]] .. preamble .. [[
 			
 extern "C" {
   void ]] .. funcname .. [[ () {
