@@ -10,6 +10,10 @@ extern "C" {
 
 namespace jiss {
 
+struct sequence_pimpl {
+
+};
+
 sequence::sequence(engine *e, const std::string &name) : 
 	state(STOPPED),
 	name(name),

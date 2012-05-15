@@ -8,6 +8,7 @@
 #include "disposable.h"
 #include "assign.h"
 #include "ringbuffer.h"
+#include "event_visitor.h"
 
 #include <vector>
 #include <map>
@@ -18,10 +19,13 @@
 namespace jiss {
 
 struct engine;
+struct sequence_pimpl;
 
 typedef std::multimap<jiss_time, event_ptr> events_map;
 
-struct sequence {
+struct sequence : event_visitor {
+	sequence_pimpl *pimpl;
+
 	enum STATE {STOPPED, STARTED};
 	int state;
 
@@ -47,6 +51,8 @@ struct sequence {
 	//! outside the RT context. This way a sequence can
 	//! contain events that are not RT safe
 	ringbuffer<event_ptr> deferred_events;
+
+	virtual void accept(cpp_event *) { std::cout << "accept()" << std::endl; }
 
 	void midi_cc(unsigned int channel, unsigned int cc, unsigned int val) {
 		jack_midi_data_t data[3] = {0, 0, 0};
@@ -124,6 +130,7 @@ struct sequence {
 			// find closest event in sequence
 			
 			while (it != events.end() && current_time_in_sequence == it->first) {
+				it->second->accept_visitor(this);
 				// std::cout << "event" << std::endl;
 				lua_event *l = dynamic_cast<lua_event*>(it->second.get());
 				if (l) {
