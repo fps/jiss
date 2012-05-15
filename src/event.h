@@ -2,6 +2,7 @@
 #define JISS_EVENT_HH
 
 #include "disposable.h"
+#include "event_visitor.h"
 
 namespace jiss {
 
@@ -9,6 +10,10 @@ struct event {
 	bool deferred;
 
 	event(bool deferred = false) : deferred(deferred) { }
+	virtual void accept_visitor(event_visitor *visitor) {
+		visitor->accept(this);
+	}
+
 	virtual ~event() { }
 };
 
