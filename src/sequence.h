@@ -52,7 +52,7 @@ struct sequence : event_visitor {
 	//! contain events that are not RT safe
 	ringbuffer<event_ptr> deferred_events;
 
-	virtual void accept(cpp_event *) { std::cout << "accept()" << std::endl; }
+	virtual void accept(event *) { std::cout << "accept()" << std::endl; }
 
 	void midi_cc(unsigned int channel, unsigned int cc, unsigned int val) {
 		jack_midi_data_t data[3] = {0, 0, 0};

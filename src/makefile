@@ -3,9 +3,14 @@
 
 all: jiss.so
 
-CXXFLAGS ?= -DJISS_NO_DEBUG -O2 -g -Wall -fPIC `pkg-config lua5.1 jack lilv-0 --cflags`
-#CXXFLAGS ?=  -g -Wall -fPIC `pkg-config lua5.1 jack --cflags` -export-dynamic
-LDFLAGS ?=  -Wl,-rpath=. `pkg-config lua5.1 jack --libs` -lingen_server
+LUA=lua
+
+CXXFLAGS ?= -DJISS_NO_DEBUG -O2 -g -Wall -fPIC `pkg-config $(LUA) jack --cflags`
+#CXXFLAGS ?=  -g -Wall -fPIC `pkg-config $(LUA) jack --cflags` 
+LDFLAGS ?=  `pkg-config $(LUA) jack --libs` 
+
+#LDFLAGS += -Wl,rpath=.
+#CXXFLAGS += -export-dynamic
 
 jiss.so: luarun.h jiss_wrap.o disposable.o engine.o heap.o main.o sequence.o event_visitor.o
 	g++ -O3 -rdynamic -Wall -shared -fPIC $(CFLAGS) -o jiss.so *.o $(LDFLAGS) 
