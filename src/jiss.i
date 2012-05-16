@@ -4,7 +4,6 @@
 	#include "engine.h"
 	#include "sequence.h"
 	#include "event.h"
-	#include "event_visitor.h"
 	#include "lua_event.h"
 	#include "cpp_event.h"
 	#include "disposable_base.h"
@@ -19,7 +18,6 @@
 %include "std_vector.i"
 
 %include "types.h"
-%include "event_visitor.h"
 %include "engine.h"
 %include "sequence.h"
 %include "event.h"
